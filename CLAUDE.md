@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Job Search Automation Tool keeps people informed about the latest vacancies on job aggregator platforms, saves company information and HR contacts, and helps to find people on LinkedIn. It is a pnpm + Turborepo monorepo with two apps: `apps/back` (NestJS 12, port 3000) and `apps/front` (Next.js 16 App Router + Tailwind CSS 4, port 3001). There is no database and no shared package yet.
+Job Search Automation Tool keeps people informed about the latest vacancies on job aggregator platforms, saves company information and HR contacts, and helps to find people on LinkedIn. It is a pnpm + Turborepo monorepo with two apps: `apps/back` (NestJS 12, port 3000) and `apps/front` (Next.js 16 App Router + Tailwind CSS 4, port 3001). Types used by both apps live in `packages/shared` (`@repo/shared`). There is no database yet.
 
 ## Read these first
 
@@ -55,7 +55,8 @@ The front app has no test runner yet. The first change with a front scenario add
 
 - `apps/back`: NestJS with ES modules (`"type": "module"`, `nodenext`). Relative imports need the `.js` extension (`./app.service.js`). `main.ts` reads `PORT` (default 3000). New feature modules are imported in `app.module.ts`; the module anatomy and registration steps are in `openspec/project.md` §4. Unit specs sit next to the code; Vitest runs with `globals: true`.
 - `apps/front`: Next.js App Router in `src/app/`. The `@/*` alias points to `src/*`. Tailwind CSS 4 loads through `@tailwindcss/turbopack` (`next.config.ts`).
-- `turbo.json` defines `build` (depends on `^build`), `dev` (no cache, persistent) and `lint`.
+- `packages/shared` (`@repo/shared`): interfaces shared by back and front. Add a file in `src/`, export it from `src/index.ts` (with `.js`), import it with `import type { X } from '@repo/shared'`. It compiles with `tsc` to `dist/`, which both apps read; turbo builds it before `build` and `dev`. Rules: `openspec/project.md` §3 "Shared package".
+- `turbo.json` defines `build` (depends on `^build`), `dev` (no cache, persistent, depends on `^build`) and `lint`.
 
 ## Conventions
 

@@ -17,16 +17,19 @@ It saves information about companies and HR contacts, and it helps to find peopl
 
 ## 📂 Project Structure
 
-| App   | Path         | Stack                               | Dev URL               |
-| ----- | ------------ | ----------------------------------- | --------------------- |
-| front | `apps/front` | Next.js + TypeScript + Tailwind CSS | http://localhost:3001 |
-| back  | `apps/back`  | NestJS + TypeScript                 | http://localhost:3000 |
+| App    | Path              | Stack                                  | Dev URL               |
+| ------ | ----------------- | -------------------------------------- | --------------------- |
+| front  | `apps/front`      | Next.js + TypeScript + Tailwind CSS    | http://localhost:3001 |
+| back   | `apps/back`       | NestJS + TypeScript                    | http://localhost:3000 |
+| shared | `packages/shared` | TypeScript interfaces (`@repo/shared`) | –                     |
 
 ```text
 job-search-automation-tool/
 ├── apps/
 │   ├── back/             # NestJS application (API)
 │   └── front/            # Next.js application (UI)
+├── packages/
+│   └── shared/           # @repo/shared: interfaces used by back and front
 ├── openspec/             # Specifications (spec-driven development)
 │   ├── README.md         # The workflow: statuses, file templates, rules
 │   ├── project.md        # Project context for specs and code
@@ -36,6 +39,34 @@ job-search-automation-tool/
 ├── CLAUDE.md             # Guide for Claude Code
 └── turbo.json            # Turborepo tasks
 ```
+
+### Shared interfaces
+
+`packages/shared` (`@repo/shared`) holds the TypeScript interfaces that both apps use, for example the shape of an API response.
+
+1. Add a file, for example `packages/shared/src/vacancy.ts`:
+
+```ts
+export interface Vacancy {
+  id: string;
+  title: string;
+  company: string;
+}
+```
+
+2. Export it from `packages/shared/src/index.ts` (keep the `.js` extension):
+
+```ts
+export type { Vacancy } from './vacancy.js';
+```
+
+3. Import it in the back app or the front app:
+
+```ts
+import type { Vacancy } from '@repo/shared';
+```
+
+`pnpm dev` and `pnpm build` compile the package first, so the apps see the new type. The rules are in [`openspec/project.md`](openspec/project.md) §3.
 
 ---
 

@@ -23,6 +23,7 @@ The code is a starting skeleton: no feature of the product exists yet.
 | Front tests           | None yet                                                                  |
 | Lint                  | oxlint (back), ESLint 9 with `eslint-config-next` (front)                 |
 | Format                | Prettier (back: single quotes, trailing commas)                           |
+| Shared types          | `@repo/shared` in `packages/shared`, built with `tsc` to `dist/`          |
 | Database              | None yet                                                                  |
 
 ## 3. Repository map
@@ -35,8 +36,21 @@ The code is a starting skeleton: no feature of the product exists yet.
 | `apps/back/test/`             | End-to-end tests (`*.e2e-spec.ts`)                                                         |
 | `apps/front/src/app/`         | App Router: `layout.tsx`, `page.tsx`, `globals.css`, one folder for each route             |
 | `apps/front/public/`          | Static files                                                                               |
+| `packages/shared/src/`        | Interfaces and types that the back app and the front app both use (`@repo/shared`)         |
 | `openspec/`                   | Specifications (`README.md` gives the process)                                             |
 | `docs/`                       | Docs for developers                                                                        |
+
+### Shared package (`packages/shared`)
+
+`@repo/shared` holds the interfaces of the data that goes between the back app and the front app: request bodies, response bodies, error bodies.
+
+- Put a type in `@repo/shared` only when both apps use it. A type for one app stays in that app.
+- Write one file for each topic in `packages/shared/src/`, for example `vacancy.ts`.
+- Export each file from `packages/shared/src/index.ts`. Write the `.js` extension: `export type { Vacancy } from './vacancy.js'`.
+- Import with `import type { Vacancy } from '@repo/shared'` in both apps. Do not import from a file path such as `@repo/shared/src/...`.
+- The package compiles to `dist/`, and both apps read `dist/`. `turbo.json` builds it before `build` and `dev` (`dependsOn: ["^build"]`). `pnpm dev` also runs `tsc --watch` on it.
+- After you add the package to a new app, add `"@repo/shared": "workspace:*"` to the `dependencies` of that app and run `pnpm install`.
+- Put only types and interfaces in the package for now. A value (an `enum`, a constant, a function) also works, because the package compiles to JavaScript, but a change must give the reason in `design.md`.
 
 ## 4. Anatomy of a back module
 
@@ -68,6 +82,7 @@ The back app has no feature module yet. The first change that adds one follows t
 | --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Imports in the back app     | ES modules with `nodenext` resolution: write the `.js` extension in relative imports, for example `import { AppService } from './app.service.js'`.                                                                                                                                            |
 | Path alias in the front app | `@/*` is `apps/front/src/*`.                                                                                                                                                                                                                                                                  |
+| Shared interfaces           | `import type { ... } from '@repo/shared'` in both apps (§3 "Shared package").                                                                                                                                                                                                                 |
 | Commits                     | Conventional Commits `type(scope): description` (`README.md` "Commit Standards"). Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `ci`. Scopes: `front`, `back`, `openspec`, `root`. Add `(openspec <id>)` at the end of the subject when the commit belongs to a change. |
 | Branches                    | The work branch is `development`. `main` is the release branch. A pull request merges `development` into `main`. Other branches are `type/short-description`: `feature/`, `bugfix/`, `hotfix/`, `refactor/`, `docs/` (`README.md` "Git Branching Convention").                                |
 | Line endings                | LF (`.gitattributes`: `* text=auto eol=lf`).                                                                                                                                                                                                                                                  |
