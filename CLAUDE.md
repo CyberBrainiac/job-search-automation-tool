@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Job Search Automation Tool is a pnpm + Turborepo monorepo with two apps: `apps/back` (NestJS 12, port 3000) and `apps/front` (Next.js 16 App Router + Tailwind CSS 4, port 3001). There is no database and no shared package yet.
+Job Search Automation Tool keeps people informed about the latest vacancies on job aggregator platforms, saves company information and HR contacts, and helps to find people on LinkedIn. It is a pnpm + Turborepo monorepo with two apps: `apps/back` (NestJS 12, port 3000) and `apps/front` (Next.js 16 App Router + Tailwind CSS 4, port 3001). There is no database and no shared package yet.
 
 ## Read these first
 
@@ -58,6 +58,6 @@ The front app has no test runner yet. The first change with a front scenario add
 
 ## Conventions
 
-- Commits: Conventional Commits with a scope, for example `feat(back): ...`, `fix(front): ...`, `docs(openspec): ...`.
-- Branches: work branch is `development`; `main` is the release branch. Merge `development` into `main` with a pull request. Other branches: `feature/`, `bugfix/`, `hotfix/`, `refactor/`, `docs/`.
+- Commits: Conventional Commits `type(scope): description` (`README.md` "Commit Standards"). Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `ci`. Scopes: `front`, `back`, `openspec`, `root`. End the subject with `(openspec <id>)` when the commit belongs to a change, for example `feat(back): add the vacancy search endpoint (openspec 261120-1432)`.
+- Branches: work branch is `development`; `main` is the release branch. Merge `development` into `main` with a pull request. Other branches are `type/short-description` with `feature/`, `bugfix/`, `hotfix/`, `refactor/`, `docs/` (`README.md` "Git Branching Convention").
 - Formatting: back uses Prettier with single quotes and trailing commas. Line endings are LF (`.gitattributes`).

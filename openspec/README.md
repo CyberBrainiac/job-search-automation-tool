@@ -245,7 +245,7 @@ Use these rules for all text in `openspec/`.
 | Use the imperative for procedures. | "Add the module to `app.module.ts`." |
 | Use the active voice. | "The system creates a saved search." Not: "A saved search is created." |
 | Use the present tense. | "The system returns 404." Not: "The system will return 404." |
-| Use one word for one meaning. Use the glossary terms (section 10). | Always the same term for one thing, for example "job posting", never "vacancy" in one place and "offer" in another. |
+| Use one word for one meaning. Use the glossary terms (section 10). | Always the same term for one thing, for example "vacancy", never "job posting" in one place and "offer" in another. |
 | Use simple approved words. | See the table below. |
 | Use tables and lists for data. | – |
 | Code names are technical names. Write them in `code` style. | `AppService`, `getHello` |

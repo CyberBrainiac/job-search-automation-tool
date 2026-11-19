@@ -5,7 +5,10 @@ For the Claude tools of this repository, read [`docs/claude-code-setup.md`](/doc
 
 ## 1. Product
 
-TODO: 2–3 sentences. Who uses the tool, and what the tool does for them.
+Job Search Automation Tool keeps a person informed about the latest vacancies on different job aggregator platforms.
+It saves information about companies and HR contacts. It also helps to find people on LinkedIn.
+
+The code is a starting skeleton: no feature of the product exists yet.
 
 ## 2. Stack
 
@@ -65,8 +68,8 @@ The back app has no feature module yet. The first change that adds one follows t
 |---|---|
 | Imports in the back app | ES modules with `nodenext` resolution: write the `.js` extension in relative imports, for example `import { AppService } from './app.service.js'`. |
 | Path alias in the front app | `@/*` is `apps/front/src/*`. |
-| Commits | Conventional Commits with a scope: `feat(back): ...`, `fix(front): ...`, `docs(openspec): ...`. Add `(openspec <id>)` at the end of the subject when the commit belongs to a change. |
-| Branches | The work branch is `development`. `main` is the release branch. A pull request merges `development` into `main`. Other branches: `feature/`, `bugfix/`, `hotfix/`, `refactor/`, `docs/`. |
+| Commits | Conventional Commits `type(scope): description` (`README.md` "Commit Standards"). Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `ci`. Scopes: `front`, `back`, `openspec`, `root`. Add `(openspec <id>)` at the end of the subject when the commit belongs to a change. |
+| Branches | The work branch is `development`. `main` is the release branch. A pull request merges `development` into `main`. Other branches are `type/short-description`: `feature/`, `bugfix/`, `hotfix/`, `refactor/`, `docs/` (`README.md` "Git Branching Convention"). |
 | Line endings | LF (`.gitattributes`: `* text=auto eol=lf`). |
 
 ## 7. Unit tests
