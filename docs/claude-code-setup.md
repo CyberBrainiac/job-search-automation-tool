@@ -5,11 +5,11 @@ itself first: Node.js 22+, pnpm 10 and `pnpm install` (see `README.md`).
 
 When everything is set up you will have:
 
-| Tool | What Claude uses it for | Installed where |
-| --- | --- | --- |
-| TypeScript LSP plugin | Type errors right after each edit, "find references" and "go to definition" across the apps | Language server: machine. Plugin: this project only (`.claude/settings.local.json`) |
-| ast-grep | Search and rewrite TypeScript by syntax, not by text lines (replaces `grep -r` + `sed -i`) | Machine (npm global) |
-| jq | Read and edit JSON: `package.json`, `tsconfig.json`, API responses (replaces inline Python scripts) | Machine (winget) |
+| Tool                  | What Claude uses it for                                                                             | Installed where                                                                     |
+| --------------------- | --------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| TypeScript LSP plugin | Type errors right after each edit, "find references" and "go to definition" across the apps         | Language server: machine. Plugin: this project only (`.claude/settings.local.json`) |
+| ast-grep              | Search and rewrite TypeScript by syntax, not by text lines (replaces `grep -r` + `sed -i`)          | Machine (npm global)                                                                |
+| jq                    | Read and edit JSON: `package.json`, `tsconfig.json`, API responses (replaces inline Python scripts) | Machine (winget)                                                                    |
 
 Nothing in this guide changes committed files. Your personal settings live in `.claude/settings.local.json`
 (in `.gitignore`) and in your Windows profile.
@@ -75,12 +75,12 @@ this step the file is:
 
 Restart Claude Code. The new PATH and the plugin load only when it starts. Then open a **new** terminal and check:
 
-| Command | Expected output |
-| --- | --- |
-| `typescript-language-server --version` | `6.x` or newer |
-| `tsc --version` | `Version 6.x` (the global fallback) |
-| `ast-grep --version` | `ast-grep 0.x` |
-| `jq --version` | `jq-1.8.x` |
+| Command                                       | Expected output                                                             |
+| --------------------------------------------- | --------------------------------------------------------------------------- |
+| `typescript-language-server --version`        | `6.x` or newer                                                              |
+| `tsc --version`                               | `Version 6.x` (the global fallback)                                         |
+| `ast-grep --version`                          | `ast-grep 0.x`                                                              |
+| `jq --version`                                | `jq-1.8.x`                                                                  |
 | `claude plugin list` (in the repository root) | `typescript-lsp@claude-plugins-official`, `Scope: local`, `Status: enabled` |
 
 ## 4. How Claude uses the tools
@@ -114,10 +114,10 @@ references. The first request after a start can return only the declaration: rep
 
 ## 5. Troubleshooting
 
-| Symptom | Fix |
-| --- | --- |
-| Claude says `ast-grep` or `jq` is not found | Restart Claude Code; PATH loads only at start. |
+| Symptom                                                                                                                                                                  | Fix                                                                                                                                                                                                                                                                                               |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Claude says `ast-grep` or `jq` is not found                                                                                                                              | Restart Claude Code; PATH loads only at start.                                                                                                                                                                                                                                                    |
 | A tool or file works in Claude's Bash tool but is missing in your terminal, or the Bash tool and the PowerShell tool show different content for a file under `%APPDATA%` | The Bash tool created the folder in the app's private store (§0). Run the step again in your own terminal. Then move the old copy (for example `npm`) out of `%LOCALAPPDATA%\Packages\Claude_*\LocalCache\Roaming\`, so that the Bash tool sees the real folder again. Move it, do not delete it. |
-| No type errors or references from the LSP plugin | Check that `typescript-language-server --version` works and that the global TypeScript is 6 (`tsc --version`), then restart Claude Code. |
-| `claude plugin list` shows the plugin as disabled | Run step 2 again in the repository root. The local scope belongs to one folder. |
-| Every line of a jq-edited file shows as changed | jq wrote CRLF. Run jq again with `-b` (§4). |
+| No type errors or references from the LSP plugin                                                                                                                         | Check that `typescript-language-server --version` works and that the global TypeScript is 6 (`tsc --version`), then restart Claude Code.                                                                                                                                                          |
+| `claude plugin list` shows the plugin as disabled                                                                                                                        | Run step 2 again in the repository root. The local scope belongs to one folder.                                                                                                                                                                                                                   |
+| Every line of a jq-edited file shows as changed                                                                                                                          | jq wrote CRLF. Run jq again with `-b` (§4).                                                                                                                                                                                                                                                       |

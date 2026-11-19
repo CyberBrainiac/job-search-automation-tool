@@ -8,11 +8,11 @@ Job Search Automation Tool keeps people informed about the latest vacancies on j
 
 ## Read these first
 
-| File | When |
-|---|---|
-| `openspec/project.md` | Before any code work or any spec work. It holds the product, the stack, the repository map, the module anatomy and registration steps, the conventions, the commands and the known issues. |
-| `openspec/README.md` | Before you read, write or implement a change. It holds the workflow, file formats, writing rules, validation checklist and glossary. |
-| `docs/claude-code-setup.md` | For the Claude tools of this repository (TypeScript LSP, ast-grep, jq). |
+| File                        | When                                                                                                                                                                                       |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `openspec/project.md`       | Before any code work or any spec work. It holds the product, the stack, the repository map, the module anatomy and registration steps, the conventions, the commands and the known issues. |
+| `openspec/README.md`        | Before you read, write or implement a change. It holds the workflow, file formats, writing rules, validation checklist and glossary.                                                       |
+| `docs/claude-code-setup.md` | For the Claude tools of this repository (TypeScript LSP, ast-grep, jq).                                                                                                                    |
 
 Do not duplicate their content in code comments or new docs. Update them when the facts change.
 
@@ -43,6 +43,7 @@ pnpm dev                              # back (:3000) and front (:3001) in watch 
 pnpm --filter back dev                # one app only
 pnpm build                            # turbo run build
 pnpm lint                             # turbo run lint (oxlint in back, ESLint in front)
+pnpm format:md                        # Prettier on all .md files (root .prettierrc)
 pnpm --filter back test               # Vitest unit tests (*.spec.ts)
 pnpm --filter back test app.controller    # one spec file (Vitest name filter)
 pnpm --filter back test:e2e           # Vitest + supertest (test/*.e2e-spec.ts)
@@ -60,4 +61,4 @@ The front app has no test runner yet. The first change with a front scenario add
 
 - Commits: Conventional Commits `type(scope): description` (`README.md` "Commit Standards"). Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `ci`. Scopes: `front`, `back`, `openspec`, `root`. End the subject with `(openspec <id>)` when the commit belongs to a change, for example `feat(back): add the vacancy search endpoint (openspec 261120-1432)`.
 - Branches: work branch is `development`; `main` is the release branch. Merge `development` into `main` with a pull request. Other branches are `type/short-description` with `feature/`, `bugfix/`, `hotfix/`, `refactor/`, `docs/` (`README.md` "Git Branching Convention").
-- Formatting: back uses Prettier with single quotes and trailing commas. Line endings are LF (`.gitattributes`).
+- Formatting: back uses Prettier with single quotes and trailing commas. Markdown uses the root `.prettierrc` (`proseWrap: preserve`, code blocks are not changed); run `pnpm format:md`. Line endings are LF (`.gitattributes`).

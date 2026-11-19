@@ -30,14 +30,14 @@ A **change ID** identifies one change. It is the date and time when the change i
 
 ## 2. Workflow
 
-| Step | Action | Who | Status after the step |
-|---|---|---|---|
-| 1 | Divide the feature into changes (plan). | Claude | – |
-| 2 | Write the change files. Do the validation pass (section 8). | Claude | `Draft` |
-| 3 | Review the change files. Write comments. Claude edits the files. | Developer + Claude | `Reviewed` |
-| 4 | Write the unit tests for each scenario. Run them. They must fail for the expected reason. | Claude | `Tested` |
-| 5 | Write the code. Run the tests and the build checks. They must pass. | Claude | `Implemented` |
-| 6 | Archive the change (section 9). | Claude | `Archived` |
+| Step | Action                                                                                    | Who                | Status after the step |
+| ---- | ----------------------------------------------------------------------------------------- | ------------------ | --------------------- |
+| 1    | Divide the feature into changes (plan).                                                   | Claude             | –                     |
+| 2    | Write the change files. Do the validation pass (section 8).                               | Claude             | `Draft`               |
+| 3    | Review the change files. Write comments. Claude edits the files.                          | Developer + Claude | `Reviewed`            |
+| 4    | Write the unit tests for each scenario. Run them. They must fail for the expected reason. | Claude             | `Tested`              |
+| 5    | Write the code. Run the tests and the build checks. They must pass.                       | Claude             | `Implemented`         |
+| 6    | Archive the change (section 9).                                                           | Claude             | `Archived`            |
 
 Do the changes in the order of their `Depends on` lines. When two changes do not depend on each other, do the change with the earlier ID first.
 
@@ -53,14 +53,14 @@ The ID of a change is the local date and time when you create the change: `YYMMD
 
 Refer to a change by its ID. A search for the ID finds the folder and all references.
 
-| Place | Form |
-|---|---|
-| `Depends on`, `Implements` | `Depends on: 261120-1432 (<what this change uses>)` |
-| Spec text, design, tasks | change `261120-1432` |
-| A range of changes | the changes `261120-1432` to `261120-1435` (all IDs from the first to the last) |
-| A file of a change | `261120-1432-job-search-form/design.md` §1 |
-| Commit message | `feat(back): add the job search endpoint (openspec 261120-1432)` |
-| Code comment | `(openspec change 261120-1432)` |
+| Place                      | Form                                                                            |
+| -------------------------- | ------------------------------------------------------------------------------- |
+| `Depends on`, `Implements` | `Depends on: 261120-1432 (<what this change uses>)`                             |
+| Spec text, design, tasks   | change `261120-1432`                                                            |
+| A range of changes         | the changes `261120-1432` to `261120-1435` (all IDs from the first to the last) |
+| A file of a change         | `261120-1432-job-search-form/design.md` §1                                      |
+| Commit message             | `feat(back): add the job search endpoint (openspec 261120-1432)`                |
+| Code comment               | `(openspec change 261120-1432)`                                                 |
 
 Git keeps the history of all edits. Do not make version copies of files.
 
@@ -131,13 +131,13 @@ Today the user must type the search again each time.
 
 Do not write these items in the description:
 
-| Item | Where it goes |
-|---|---|
+| Item                                                                                                        | Where it goes                                          |
+| ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
 | How, when or by whom a problem was found. Who asked for the change. The text of a review or a conversation. | Nowhere. Git and the review comments hold the history. |
-| The status history of the change, for example "reopened". | Nowhere. Git holds it. |
-| The code cause of a bug: a decorator, the order of methods, a query detail. | `design.md`, when the fix needs it. |
-| The solution. | `What changes`. |
-| Lists of files. | `Impact`. |
+| The status history of the change, for example "reopened".                                                   | Nowhere. Git holds it.                                 |
+| The code cause of a bug: a decorator, the order of methods, a query detail.                                 | `design.md`, when the fix needs it.                    |
+| The solution.                                                                                               | `What changes`.                                        |
+| Lists of files.                                                                                             | `Impact`.                                              |
 
 Code names are correct in the description when the reader sees them: a route, a page, a dialog, an error code.
 
@@ -162,6 +162,7 @@ Use a short prefix for the IDs of one change or one group of changes, for exampl
 ### `tasks.md`
 
 A checklist in three groups:
+
 1. **Unit tests (step 4):** one line for each test file.
 2. **Code (step 5):** one line for each file or small group of files.
 3. **Checks:** the commands that must pass.
@@ -224,11 +225,11 @@ Rules for a screen (front changes):
 
 ## 5. Delta sections
 
-| Section | Use |
-|---|---|
-| `## ADDED Requirements` | A new requirement. |
+| Section                    | Use                                                                                               |
+| -------------------------- | ------------------------------------------------------------------------------------------------- |
+| `## ADDED Requirements`    | A new requirement.                                                                                |
 | `## MODIFIED Requirements` | A changed requirement that already exists in `specs/`. Copy the full requirement, then change it. |
-| `## REMOVED Requirements` | A requirement that exists in `specs/` and must go. Give the reason. |
+| `## REMOVED Requirements`  | A requirement that exists in `specs/` and must go. Give the reason.                               |
 
 A change uses `MODIFIED` or `REMOVED` for a requirement in `specs/` or in an open change that comes before it (the order of section 2).
 Use the requirement name exactly as it is in that file.
@@ -237,31 +238,31 @@ Use the requirement name exactly as it is in that file.
 
 Use these rules for all text in `openspec/`.
 
-| Rule | Example |
-|---|---|
-| Write procedural sentences of 20 words or fewer. | "Run the tests." |
-| Write descriptive sentences of 25 words or fewer. | "A saved search is a set of keywords and filters that a user can run again." |
-| Write one instruction in one sentence. | Not: "Add the DTO and register it and test it." |
-| Use the imperative for procedures. | "Add the module to `app.module.ts`." |
-| Use the active voice. | "The system creates a saved search." Not: "A saved search is created." |
-| Use the present tense. | "The system returns 404." Not: "The system will return 404." |
+| Rule                                                               | Example                                                                                                             |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| Write procedural sentences of 20 words or fewer.                   | "Run the tests."                                                                                                    |
+| Write descriptive sentences of 25 words or fewer.                  | "A saved search is a set of keywords and filters that a user can run again."                                        |
+| Write one instruction in one sentence.                             | Not: "Add the DTO and register it and test it."                                                                     |
+| Use the imperative for procedures.                                 | "Add the module to `app.module.ts`."                                                                                |
+| Use the active voice.                                              | "The system creates a saved search." Not: "A saved search is created."                                              |
+| Use the present tense.                                             | "The system returns 404." Not: "The system will return 404."                                                        |
 | Use one word for one meaning. Use the glossary terms (section 10). | Always the same term for one thing, for example "vacancy", never "job posting" in one place and "offer" in another. |
-| Use simple approved words. | See the table below. |
-| Use tables and lists for data. | – |
-| Code names are technical names. Write them in `code` style. | `AppService`, `getHello` |
+| Use simple approved words.                                         | See the table below.                                                                                                |
+| Use tables and lists for data.                                     | –                                                                                                                   |
+| Code names are technical names. Write them in `code` style.        | `AppService`, `getHello`                                                                                            |
 
-| Do not use | Use |
-|---|---|
-| utilize | use |
-| ensure | make sure |
-| initiate, commence | start |
-| terminate | stop |
-| display (verb) | show |
-| perform | do |
-| prior to | before |
-| in order to | to |
-| via | through, with |
-| should (for a rule) | SHALL / must |
+| Do not use          | Use           |
+| ------------------- | ------------- |
+| utilize             | use           |
+| ensure              | make sure     |
+| initiate, commence  | start         |
+| terminate           | stop          |
+| display (verb)      | show          |
+| perform             | do            |
+| prior to            | before        |
+| in order to         | to            |
+| via                 | through, with |
+| should (for a rule) | SHALL / must  |
 
 ## 7. Test traceability
 
@@ -278,11 +279,11 @@ Mark a scenario that only a journey test can check with `(journey)` after its na
 
 Test locations:
 
-| Code | Test runner | Test location |
-|---|---|---|
-| Back module (`apps/back/src`) | Vitest | Next to the code: `<name>.service.spec.ts`, `<name>.controller.spec.ts` |
-| Back end-to-end (HTTP) | Vitest + supertest (`vitest.config.e2e.ts`) | `apps/back/test/<name>.e2e-spec.ts` |
-| Front component, page, hook (`apps/front/src`) | None yet | The front app has no test runner. The first change with a front scenario adds one, and updates this row and `project.md`. |
+| Code                                           | Test runner                                 | Test location                                                                                                             |
+| ---------------------------------------------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Back module (`apps/back/src`)                  | Vitest                                      | Next to the code: `<name>.service.spec.ts`, `<name>.controller.spec.ts`                                                   |
+| Back end-to-end (HTTP)                         | Vitest + supertest (`vitest.config.e2e.ts`) | `apps/back/test/<name>.e2e-spec.ts`                                                                                       |
+| Front component, page, hook (`apps/front/src`) | None yet                                    | The front app has no test runner. The first change with a front scenario adds one, and updates this row and `project.md`. |
 
 ## 8. Validation checklist
 
@@ -316,7 +317,7 @@ Do these steps when a change has the status `Implemented`.
 
 Add a term here when a change uses it for the first time. Write `(NEW in change <id>)` at the end of its meaning. Then use the term with this one meaning in all files.
 
-| Term | Meaning |
-|---|---|
-| **Back app** | The NestJS app: `apps/back`. |
+| Term          | Meaning                        |
+| ------------- | ------------------------------ |
+| **Back app**  | The NestJS app: `apps/back`.   |
 | **Front app** | The Next.js app: `apps/front`. |

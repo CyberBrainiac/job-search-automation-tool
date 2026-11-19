@@ -5,9 +5,11 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
-    "lint": "turbo run lint"
+    "lint": "turbo run lint",
+    "format:md": "prettier --write \"**/*.md\""
   },
   "devDependencies": {
+    "prettier": "^3.10.1",
     "turbo": "^2.11.13"
   }
 }

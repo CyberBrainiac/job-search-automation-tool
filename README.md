@@ -17,10 +17,10 @@ It saves information about companies and HR contacts, and it helps to find peopl
 
 ## 📂 Project Structure
 
-| App | Path | Stack | Dev URL |
-|-----|------|-------|---------|
+| App   | Path         | Stack                               | Dev URL               |
+| ----- | ------------ | ----------------------------------- | --------------------- |
 | front | `apps/front` | Next.js + TypeScript + Tailwind CSS | http://localhost:3001 |
-| back | `apps/back` | NestJS + TypeScript | http://localhost:3000 |
+| back  | `apps/back`  | NestJS + TypeScript                 | http://localhost:3000 |
 
 ```text
 job-search-automation-tool/
@@ -77,28 +77,45 @@ For the Claude Code tools of this repository, see [`docs/claude-code-setup.md`](
 Run the commands from the repository root.
 
 - Run front and back in watch mode:
+
 ```bash
 pnpm dev
 ```
+
 - Run one app only:
+
 ```bash
 pnpm --filter back dev
 ```
+
 ```bash
 pnpm --filter front dev
 ```
+
 - Build all apps:
+
 ```bash
 pnpm build
 ```
+
 - Lint all apps:
+
 ```bash
 pnpm lint
 ```
+
+- Format all Markdown files with Prettier:
+
+```bash
+pnpm format:md
+```
+
 - Test the back app (unit tests, then end-to-end tests):
+
 ```bash
 pnpm --filter back test
 ```
+
 ```bash
 pnpm --filter back test:e2e
 ```
@@ -131,6 +148,7 @@ monorepo, always specify the scope (the app name or the area) when possible.
 <b>Format</b>: `type(scope): description`
 
 <b>Available Types:</b>
+
 - `feat`: A new feature for the user.
 - `fix`: A bug fix for the user.
 - `docs`: Changes to the documentation.
@@ -145,6 +163,7 @@ monorepo, always specify the scope (the app name or the area) when possible.
 When a commit belongs to an OpenSpec change, add its ID at the end of the subject: `(openspec <id>)`.
 
 <b>Examples:</b>
+
 - `feat(back): add the vacancy search endpoint (openspec 261120-1432)`
 - `fix(front): resolve the company list alignment issue`
 - `docs(openspec): add the change for saved searches`
