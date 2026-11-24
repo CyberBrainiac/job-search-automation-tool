@@ -1,7 +1,7 @@
 # Project context: Job Search Automation Tool
 
 Read this file before you read or write a specification. It describes the project and the code. `specs/` holds the current requirements of each capability.
-For the Claude tools of this repository, read [`docs/claude-code-setup.md`](/docs/claude-code-setup.md).
+For the Claude tools of this repository, read [`../docs/claude-code-tools-setup.md`](/docs/claude-code-tools-setup.md).
 
 ## 1. Product
 

@@ -1,4 +1,4 @@
-# Claude Code setup guide
+# Claude Code tools setup guide
 
 How to give Claude Code the extra tools it uses in this repository, on a new Windows PC. Install the project
 itself first: Node.js 22+, pnpm 10 and `pnpm install` (see `README.md`).

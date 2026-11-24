@@ -99,7 +99,7 @@ Install the dependencies of all apps (run from the repository root):
 pnpm install
 ```
 
-For the Claude Code tools of this repository, see [`docs/claude-code-setup.md`](docs/claude-code-setup.md).
+For the Claude Code tools of this repository, see [`docs/claude-code-tools-setup.md`](docs/claude-code-tools-setup.md).
 
 ---
 

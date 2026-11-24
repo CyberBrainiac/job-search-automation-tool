@@ -12,7 +12,7 @@ Job Search Automation Tool keeps people informed about the latest vacancies on j
 | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `openspec/project.md`       | Before any code work or any spec work. It holds the product, the stack, the repository map, the module anatomy and registration steps, the conventions, the commands and the known issues. |
 | `openspec/README.md`        | Before you read, write or implement a change. It holds the workflow, file formats, writing rules, validation checklist and glossary.                                                       |
-| `docs/claude-code-setup.md` | For the Claude tools of this repository (TypeScript LSP, ast-grep, jq).                                                                                                                    |
+| `docs/claude-code-tools-setup.md` | For the Claude tools of this repository (TypeScript LSP, ast-grep, jq).                                                                                                                    |
 
 Do not duplicate their content in code comments or new docs. Update them when the facts change.
 
