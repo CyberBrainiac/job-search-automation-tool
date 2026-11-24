@@ -314,15 +314,15 @@ export function safeHttpUrl(value: string): string | null {
 
 **Risk:** an error leaks internals, lets a request continue (fail open), or leaves no trace of an attack. OWASP A10 (new in 2025) and A09.
 
-| ID       | Rule                                                                                                                                                                      | Check    |
-| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| SEC-10.1 | One global exception filter (`APP_FILTER`). A `500` response has the `ApiErrorResponse` shape from `@repo/shared` and a generic message. No stack, no SQL, no file paths. | `e2e`    |
-| SEC-10.2 | Fail closed: when a guard or an auth check throws, the request is denied. A `catch` in security code never returns "allowed".                                             | `unit`   |
-| SEC-10.3 | No empty `catch {}`. Log the error, or throw it again.                                                                                                                    | `static` |
-| SEC-10.4 | Writes that belong together run in one `prisma.$transaction`, so a failure leaves no half-saved data.                                                                     | `unit`   |
-| SEC-10.5 | Log these events with the Nest `Logger`: failed login, `401`, `403`, owner-check `404`, validation `400`, rate limit `429`. Log the user ID, the route and the time.      | `unit`   |
-| SEC-10.6 | Never log passwords, tokens, cookies, full request bodies or HR contact data.                                                                                             | `unit`   |
-| SEC-10.7 | Use the Nest `Logger`, not `console.log`, in the back app.                                                                                                                | `static` |
+| ID       | Rule                                                                                                                                                                                                                | Check    |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| SEC-10.1 | One global exception filter (`APP_FILTER`, change `261124-0853`). A `500` response has the `ErrorResponse` shape from `@repo/shared` and a generic message. Outside `development`: no stack, no SQL, no file paths. | `e2e`    |
+| SEC-10.2 | Fail closed: when a guard or an auth check throws, the request is denied. A `catch` in security code never returns "allowed".                                                                                       | `unit`   |
+| SEC-10.3 | No empty `catch {}`. Log the error, or throw it again.                                                                                                                                                              | `static` |
+| SEC-10.4 | Writes that belong together run in one `prisma.$transaction`, so a failure leaves no half-saved data.                                                                                                               | `unit`   |
+| SEC-10.5 | Log these events with the Nest `Logger`: failed login, `401`, `403`, owner-check `404`, validation `400`, rate limit `429`. Log the user ID, the route and the time.                                                | `unit`   |
+| SEC-10.6 | Never log passwords, tokens, cookies, full request bodies or HR contact data.                                                                                                                                       | `unit`   |
+| SEC-10.7 | Use the Nest `Logger`, not `console.log`, in the back app.                                                                                                                                                          | `static` |
 
 ```ts
 // BAD: fail open
@@ -388,7 +388,7 @@ Also run a secret scanner (for example `gitleaks`) and GitHub secret scanning fo
 | `loginAs(app, user)`       | Returns a cookie or token for a test user.                                                    | SEC-01, SEC-04     |
 | Two test users A and B     | Seed data: each user owns one object of each kind.                                            | SEC-01 tests       |
 | `expectNoSecretKeys(body)` | Fails when the body has a key such as `password`, `passwordHash`, `token`, `secret`, `stack`. | SEC-02.4, SEC-10.1 |
-| `expectSafeError(res)`     | Checks the `ApiErrorResponse` shape and no stack trace.                                       | SEC-05.5, SEC-10.1 |
+| `expectSafeError(res)`     | Checks the `ErrorResponse` shape and no stack trace.                                          | SEC-05.5, SEC-10.1 |
 
 Put the security e2e tests of a module in `apps/back/test/<name>.e2e-spec.ts` with the other scenarios of the module. Use `describe('<Requirement name>')` and `it('<Scenario name>')` as in `openspec/README.md` §7.
 
