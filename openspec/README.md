@@ -317,7 +317,12 @@ Do these steps when a change has the status `Implemented`.
 
 Add a term here when a change uses it for the first time. Write `(NEW in change <id>)` at the end of its meaning. Then use the term with this one meaning in all files.
 
-| Term          | Meaning                        |
-| ------------- | ------------------------------ |
-| **Back app**  | The NestJS app: `apps/back`.   |
-| **Front app** | The Next.js app: `apps/front`. |
+| Term                        | Meaning                                                                                                                                                        |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Back app**                | The NestJS app: `apps/back`.                                                                                                                                   |
+| **Front app**               | The Next.js app: `apps/front`.                                                                                                                                 |
+| **Error response**          | The JSON body that the back app sends for a request that ends with an exception. Its type is `ErrorResponse` of `@repo/shared`. (NEW in change `261124-0853`)  |
+| **Error code**              | A fixed text of `ErrorCodes` in `@repo/shared`, for example `RESOURCE_NOT_FOUND`. It tells the front app the reason of an error. (NEW in change `261124-0853`) |
+| **Business error**          | An error that the code throws on purpose with `CustomException`. It has an HTTP status and an error code. (NEW in change `261124-0853`)                        |
+| **Unexpected error**        | An exception that is not an `HttpException`, for example a `TypeError`, or a thrown value that is not an `Error`. (NEW in change `261124-0853`)                |
+| **Global exception filter** | `AllExceptionsFilter`: the one NestJS filter that catches each exception of the back app and sends the error response. (NEW in change `261124-0853`)           |
