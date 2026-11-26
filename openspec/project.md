@@ -50,6 +50,7 @@ The code is a starting skeleton: no feature of the product exists yet.
 - Export each file from `packages/shared/src/index.ts`. Write the `.js` extension: `export type { Vacancy } from './vacancy.js'`.
 - Import with `import type { Vacancy } from '@repo/shared'` in both apps. Do not import from a file path such as `@repo/shared/src/...`.
 - The package compiles to `dist/`, and both apps read `dist/`. `turbo.json` builds it before `build` and `dev` (`dependsOn: ["^build"]`). `pnpm dev` also runs `tsc --watch` on it.
+- The type check of the IDE reads `src/`, so a new export shows with no build. The export condition `@repo/source` in `packages/shared/package.json` points to `src/index.ts`. `apps/back/tsconfig.json` and `apps/front/tsconfig.json` use it with `customConditions`. `apps/back/tsconfig.build.json` sets `customConditions: []`, so the build and Node read `dist/`.
 - After you add the package to a new app, add `"@repo/shared": "workspace:*"` to the `dependencies` of that app and run `pnpm install`.
 - Put only types and interfaces in the package for now. A value (an `enum`, a constant, a function) also works, because the package compiles to JavaScript, but a change must give the reason in `design.md`.
 - `error-codes.ts` and `http-status-messages.ts` hold values: `ERROR_TABLE`, `ErrorCodes`, `CODE_BY_STATUS`, `isErrorCode()` and `HTTP_STATUS_MESSAGES` (change `261124-0853`, EH1, EH2).

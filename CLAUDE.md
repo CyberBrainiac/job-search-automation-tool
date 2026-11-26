@@ -56,7 +56,7 @@ The front app has no test runner yet. The first change with a front scenario add
 
 - `apps/back`: NestJS with ES modules (`"type": "module"`, `nodenext`). Relative imports need the `.js` extension (`./app.service.js`). `main.ts` reads `PORT` (default 3000). New feature modules are imported in `app.module.ts`; the module anatomy and registration steps are in `openspec/project.md` §4. Unit specs sit next to the code; Vitest runs with `globals: true`.
 - `apps/front`: Next.js App Router in `src/app/`. The `@/*` alias points to `src/*`. Tailwind CSS 4 loads through `@tailwindcss/turbopack` (`next.config.ts`).
-- `packages/shared` (`@repo/shared`): interfaces shared by back and front. Add a file in `src/`, export it from `src/index.ts` (with `.js`), import it with `import type { X } from '@repo/shared'`. It compiles with `tsc` to `dist/`, which both apps read; turbo builds it before `build` and `dev`. Rules: `openspec/project.md` §3 "Shared package".
+- `packages/shared` (`@repo/shared`): interfaces shared by back and front. Add a file in `src/`, export it from `src/index.ts` (with `.js`), import it with `import type { X } from '@repo/shared'`. It compiles with `tsc` to `dist/`, which the builds and Node read; turbo builds it before `build` and `dev`. The IDE type check reads `src/` through the export condition `@repo/source` (`customConditions` in the app tsconfigs), so it needs no build. Rules: `openspec/project.md` §3 "Shared package".
 - `turbo.json` defines `build` (depends on `^build`), `dev` (no cache, persistent, depends on `^build`) and `lint`.
 
 ## Conventions
