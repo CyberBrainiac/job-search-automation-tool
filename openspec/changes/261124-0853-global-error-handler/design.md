@@ -1,81 +1,28 @@
-# Design — 261124-0853 Global error handler in the back app
+# Design — 261124-0853 Error model and error log in the back app
 
-The model is the error handling of the 13hunters back app: `AllExceptionsFilter`, `CustomException`, `ErrorCodes` and `ErrorResponse`. This change keeps its error response and makes the rest smaller. `docs/error-handling.md` has the diagrams.
+The shapes, the diagrams and the examples are in [`docs/error-handling-improvements.md`](../../../docs/error-handling-improvements.md) §3, §4 and §6. They are part of this design. This file gives the decisions.
 
 ## 1. Decisions
 
-| ID  | Decision                                                                                                                                                                                                                                                      | Reason                                                                                                                                                                                                 |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| EH1 | One catch-all filter, `AllExceptionsFilter` with `@Catch()`, handles all exceptions. There is no second filter for `HttpException`.                                                                                                                           | All rules of the error response are in one place, so two filters cannot build different bodies.                                                                                                        |
-| EH2 | Register the filter as the provider `APP_FILTER` in `AppModule`. Do not call `app.useGlobalFilters()` in `main.ts`.                                                                                                                                           | The e2e tests build `AppModule` and do not run `main.ts`, so they get the filter too. NestJS also injects `HttpAdapterHost` into the filter.                                                           |
-| EH3 | `@repo/shared` holds `BaseResponse`, `ErrorResponse` and `ErrorMetadata` (§2). They replace `ApiErrorResponse`, which has the NestJS default shape.                                                                                                           | The back app builds the error response, and the front app reads it. Both apps use one definition.                                                                                                      |
-| EH4 | `ErrorCodes` is a constant object in `@repo/shared`. The type `ErrorCode` is the union of its values.                                                                                                                                                         | This is a value, not only a type (`project.md` §3). The back app needs the value to throw an error, and the front app needs it to compare a code. With one list, the compiler finds a misspelled code. |
-| EH5 | `CustomException` extends `HttpException`. Its constructor has 3 required parameters: `message: string`, `status: HttpStatus` and `errorCode: ErrorCode`. It gives `{ message, errorCode }` to `HttpException` as the response.                               | Each business error has an error code that the front app can check.                                                                                                                                    |
-| EH6 | For an unexpected error, the filter sends the status `500`, the message `Internal server error` and the error code `INTERNAL_SERVER_ERROR`. The log line keeps the real message and the stack.                                                                | The message of an unexpected error can show internal data, for example a file path or a database detail. The client does not need it.                                                                  |
-| EH7 | The filter adds `stackTrace` only when `process.env.NODE_ENV` is `development`. It reads `process.env` directly.                                                                                                                                              | When `NODE_ENV` is not set, the stack stays hidden, so the default is safe. The back app has no `@nestjs/config` yet. The terminal log always shows the stack of a server error.                       |
-| EH8 | A service that calls another site (a job aggregator, LinkedIn) catches the error of the call. It writes the error to the log and throws `CustomException` with `502 Bad Gateway` and `EXTERNAL_API_ERROR`. The filter has no rule for an HTTP client library. | The status of the other site, for example its `404`, is not the status of this API. The filter stays small.                                                                                            |
+| ID   | Decision                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | Reason                                                                                                                                                                                                                                    |
+| ---- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| EH1  | `ERROR_TABLE` in `packages/shared/src/error-codes.ts` is the one source of each error code: the status, the default message and the retry flag (docs §3.2). `ErrorCodes` is a constant object, and `ErrorCode` is the union of its values. `ERROR_TABLE` has the type `Record<ErrorCode, ErrorDefinition>`. `CODE_BY_STATUS` gives the default code of a status. `isErrorCode()` checks a text.                                                                                                                                                          | The compiler asks for one row for each code. These are values, not only types (`project.md` §3): the back app needs them to throw and convert an error, and the front app needs them to show the default message and to retry.            |
+| EH2  | `HTTP_STATUS_MESSAGES` in `packages/shared/src/http-status-messages.ts` gives the default text of an HTTP error status (docs §3.1). The statuses are numbers. The generic codes of `ERROR_TABLE` use these texts.                                                                                                                                                                                                                                                                                                                                        | The front app shows a text for a response with no error code, for example a page of a proxy. `@repo/shared` cannot import `HttpStatus` of NestJS, and `HttpStatus.NOT_FOUND` is `404`.                                                    |
+| EH3  | `CustomException` extends `HttpException`. The constructor is `(code: ErrorCode, message?: string, options?: { details?: ErrorDetails; cause?: unknown })`. It gives the status of the code, `errorCode` and `cause` to `HttpException`. Without a message, it uses the default message of the code.                                                                                                                                                                                                                                                     | The status of a code cannot be different in two places. `errorCode` and `cause` are options of the NestJS 12 `HttpException`, so other NestJS code sees them too.                                                                         |
+| EH4  | `toAppError(error, context, handlers = backErrorHandlers)` asks the error handlers in order (docs §4). The first handler that says yes gives the code, the type, the message and the details. `ERROR_TABLE` gives the status, the retry flag and the default message. An `HttpException` keeps its own status. The order is `CustomException`, `HttpException`, `TimeoutError`, `Error`, any other value.                                                                                                                                                | A new error type needs one new handler, and the filter does not change (my-thought 1). A handler cannot invent a status.                                                                                                                  |
+| EH5  | The `HttpException` handler uses the rules of docs §4.2. A status outside 400–599 gives `500`. A known `errorCode` wins. A list goes to `details.validation` (`VALIDATION_FAILED` only for `400`). An `Error` response gives the default message and goes to `cause`. The unknown-route message loses its query.                                                                                                                                                                                                                                         | Express can throw inside the filter for a status outside 400–599. `new UnauthorizedException(err)` would send the text of `err`, and NestJS also replaces it. A token in the query of an unknown route must not go to the log.            |
+| EH6  | `details` has the type `ErrorDetails`: an object with optional keys. It has one key now, `validation: string[]`. A key answers "What must the client do to fix the error?". There is no second field for the customer.                                                                                                                                                                                                                                                                                                                                   | The compiler tells the front app which keys exist, and a new key breaks nothing. With fixed keys, internal data cannot go to the client by mistake. `message` is the text for the customer.                                               |
+| EH7  | `AppError.stack` is the stack of the thrown error. `AppError.cause` is the error in `error.cause` (or the `Error` response of EH5) as an `ErrorCause`: the type, the message, the stack and the next cause. The chain stops after 3 errors.                                                                                                                                                                                                                                                                                                              | The cause shows the real problem of an API integration (Q5). The limit stops a loop when an error is its own cause.                                                                                                                       |
+| EH8  | `toAppError()` unwraps a wrapper error before the handlers (docs §4.1). A `SuppressedError` takes the code, the status, the message, the details and the retry flag of `.suppressed`. An `AggregateError` takes them from its first inner error with a code that is not `INTERNAL_SERVER_ERROR`, else it gets `INTERNAL_SERVER_ERROR`. `inner` keeps at most 10 errors. The depth is at most 3. The check of `SuppressedError` uses `error.name`.                                                                                                        | Q9. Node 22 has no global `SuppressedError`, so `instanceof SuppressedError` throws `ReferenceError`. TypeScript with `target: ES2023` does not know the type.                                                                            |
+| EH9  | `toAppError()` never throws. A `try`/`catch` around the conversion gives `INTERNAL_SERVER_ERROR` with the type `UnknownError` when a handler fails. A value that is not an `Error` becomes a text with `String()` inside this `try`.                                                                                                                                                                                                                                                                                                                     | An error inside the error handling leaves the client with no reply. `String(Object.create(null))` throws `TypeError`.                                                                                                                     |
+| EH10 | `logError` in `common/errors/error-logger.ts` is the one logger (type `ErrorLogger`). It uses the NestJS `Logger`. The level is `error` for a status of 500 or more, an inner error with 500 or more, or a source that is not `http`. Else it is `warn`. Outside development, it changes each `\r` and `\n` to the 2 characters `\n`. Then one error is one line with the type, the stack and the cause. In development, the stack is the second argument of `Logger.error()`. When the NestJS `Logger` throws, it writes the line with `console.error`. | my-thought 5 and Q7: one log function for all errors. A line break from a user value can make a fake log line (SEC-03.10). A stack on extra lines is easy to read on the PC of the developer. A JSON logger and Sentry are later changes. |
+| EH11 | `isDevelopment()` in `common/environment.ts` returns `process.env.NODE_ENV === 'development'`. It reads the variable at each call.                                                                                                                                                                                                                                                                                                                                                                                                                       | When `NODE_ENV` is not set, the result is `false`, so the safe rules apply. The unit tests change `NODE_ENV`. The back app has no `@nestjs/config` yet.                                                                                   |
 
-## 2. Shared types
+## 2. Not in this change
 
-`packages/shared/src/error-codes.ts` (EH4). A change adds a code when it needs a new one.
-
-```ts
-export const ErrorCodes = {
-  VALIDATION_FAILED: 'VALIDATION_FAILED',
-  RESOURCE_NOT_FOUND: 'RESOURCE_NOT_FOUND',
-  RESOURCE_ALREADY_EXISTS: 'RESOURCE_ALREADY_EXISTS',
-  EXTERNAL_API_ERROR: 'EXTERNAL_API_ERROR',
-  INTERNAL_SERVER_ERROR: 'INTERNAL_SERVER_ERROR',
-} as const;
-
-export type ErrorCode = (typeof ErrorCodes)[keyof typeof ErrorCodes];
-```
-
-`packages/shared/src/api-response.ts` (EH3):
-
-```ts
-import type { ErrorCode } from './error-codes.js';
-
-/** The fields of each response body of the back app. */
-export interface BaseResponse<T = unknown> {
-  success: boolean;
-  data: T;
-  statusCode: number;
-}
-
-/** The body of a request that ends with an exception (AllExceptionsFilter). */
-export interface ErrorResponse extends BaseResponse<null> {
-  success: false;
-  message: string | string[];
-  metadata: ErrorMetadata;
-}
-
-export interface ErrorMetadata {
-  /** ISO 8601. */
-  timestamp: string;
-  /** The URL of the request, with the query. */
-  path: string;
-  /** The class name of the error, or `UnknownError` for a value that is not an `Error`. */
-  exceptionType: string;
-  /** The `name` of the error. */
-  exceptionName?: string;
-  errorCode?: ErrorCode;
-  /** Only when `NODE_ENV` is `development` (EH7). */
-  stackTrace?: string;
-}
-```
-
-The fields are the fields of the 13hunters `ErrorResponse`. There are 3 differences:
-
-- `statusCode` is a `number`, because the front app has no `HttpStatus` of NestJS.
-- `ErrorResponse` has no type parameter, and `success` is `false`. The front app can use `success` to tell an error from a success body.
-- `errorCode` has the type `ErrorCode`, not `string`.
-
-## 3. Not in this change
-
-| Item                                                                                                                                                         | Where it goes                           |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------- |
-| The success body `{ success: true, data, statusCode }` (the 13hunters `BaseResponseInterceptor`). Until then, a success response is the data of the handler. | A later change. It uses `BaseResponse`. |
-| A global `ValidationPipe`. Its `400` already fits the requirement "List of messages".                                                                        | The first change with a DTO.            |
-| Contexts that are not HTTP, for example WebSocket or a bot. The filter answers HTTP requests only.                                                           | The change that adds the context.       |
-| Error messages on the pages of the front app.                                                                                                                | A front change.                         |
+| Item                                                                           | Where it goes               |
+| ------------------------------------------------------------------------------ | --------------------------- |
+| The error response and the global exception filter                             | Change `261126-1154`        |
+| The log of errors outside a request                                            | Change `261126-1156`        |
+| The HTTP client handler (axios or fetch) and the handlers of other contexts    | Later changes (docs §11)    |
+| A global `ValidationPipe`. The `HttpException` handler already reads its list. | The first change with a DTO |
