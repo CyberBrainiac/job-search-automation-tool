@@ -41,7 +41,7 @@ afterEach(() => {
 });
 
 /** The first argument of each call of a spy. */
-function texts(spy: ReturnType<typeof vi.spyOn>): string[] {
+function texts(spy: { mock: { calls: unknown[][] } }): string[] {
   return spy.mock.calls.map((call) => String(call[0]));
 }
 

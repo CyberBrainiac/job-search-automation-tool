@@ -313,7 +313,10 @@ describe('Cause of an error', () => {
 describe('Suppressed error', () => {
   it('Cleanup error after a business error', () => {
     const error = suppressedError(
-      new CustomException(ErrorCodes.RESOURCE_NOT_FOUND, 'Vacancy 42 not found'),
+      new CustomException(
+        ErrorCodes.RESOURCE_NOT_FOUND,
+        'Vacancy 42 not found',
+      ),
       new TypeError('close failed'),
     );
 

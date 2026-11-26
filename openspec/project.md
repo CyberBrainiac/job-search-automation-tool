@@ -33,6 +33,7 @@ The code is a starting skeleton: no feature of the product exists yet.
 | `apps/back/src/main.ts`       | Bootstrap. Reads `PORT` and logs the URL.                                                  |
 | `apps/back/src/app.module.ts` | Root module. Imports all feature modules.                                                  |
 | `apps/back/src/<name>/`       | Feature modules (NEW when the first module comes): controller, service, module, spec files |
+| `apps/back/src/common/`       | Code that all back modules use: errors, filters, interceptors                              |
 | `apps/back/test/`             | End-to-end tests (`*.e2e-spec.ts`)                                                         |
 | `apps/front/src/app/`         | App Router: `layout.tsx`, `page.tsx`, `globals.css`, one folder for each route             |
 | `apps/front/public/`          | Static files                                                                               |
@@ -51,6 +52,8 @@ The code is a starting skeleton: no feature of the product exists yet.
 - The package compiles to `dist/`, and both apps read `dist/`. `turbo.json` builds it before `build` and `dev` (`dependsOn: ["^build"]`). `pnpm dev` also runs `tsc --watch` on it.
 - After you add the package to a new app, add `"@repo/shared": "workspace:*"` to the `dependencies` of that app and run `pnpm install`.
 - Put only types and interfaces in the package for now. A value (an `enum`, a constant, a function) also works, because the package compiles to JavaScript, but a change must give the reason in `design.md`.
+- `error-codes.ts` and `http-status-messages.ts` hold values: `ERROR_TABLE`, `ErrorCodes`, `CODE_BY_STATUS`, `isErrorCode()` and `HTTP_STATUS_MESSAGES` (change `261124-0853`, EH1, EH2).
+- The Vitest configs of the back app point `@repo/shared` to `packages/shared/src/index.ts`, so the back tests need no build of the package.
 
 ## 4. Anatomy of a back module
 
@@ -86,6 +89,7 @@ The back app has no feature module yet. The first change that adds one follows t
 | Commits                     | Conventional Commits `type(scope): description` (`README.md` "Commit Standards"). Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `ci`. Scopes: `front`, `back`, `openspec`, `root`. Add `(openspec <id>)` at the end of the subject when the commit belongs to a change. |
 | Branches                    | The work branch is `development`. `main` is the release branch. A pull request merges `development` into `main`. Other branches are `type/short-description`: `feature/`, `bugfix/`, `hotfix/`, `refactor/`, `docs/` (`README.md` "Git Branching Convention").                                |
 | Line endings                | LF (`.gitattributes`: `* text=auto eol=lf`).                                                                                                                                                                                                                                                  |
+| Errors                      | Throw `CustomException` with a code of `ErrorCodes`, for example `throw new CustomException(ErrorCodes.RESOURCE_NOT_FOUND, 'Vacancy 42 not found')`. Add a new code to `ERROR_TABLE`. Write a 4xx message for the customer, with no internal details.                                         |
 
 ## 7. Unit tests
 
