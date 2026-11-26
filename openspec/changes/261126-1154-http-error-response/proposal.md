@@ -43,4 +43,4 @@ Today the back app sends the NestJS default body `{ statusCode, message, error }
 - [x] 7. Writing rules — no banned word (script check). Sentences have 25 words or fewer, except lists of names. Active voice, present tense. 3 new glossary terms in `README.md` §10.
 - [x] 8. Description — a feature explanation, then the limit of today. No history of the work.
 - [x] 9. Change ID — `261126-1154` is the only folder with this ID. The 52 scenario names of `error-handling` in the changes `261124-0853`, `261126-1154` and `261126-1156` are unique (script check).
-- [x] 10. Diagrams — this change has no diagram. The diagrams of `docs/error-handling-improvements.md` §5 and §5.1 follow `diagrams.md` (rendered with Mermaid 11).
+- [x] 10. Diagrams — this change has no diagram. The diagrams of `docs/error-handling.md` §4 and §4.1 follow `diagrams.md` (rendered with Mermaid 11).

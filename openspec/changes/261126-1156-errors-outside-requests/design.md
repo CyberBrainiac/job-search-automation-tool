@@ -1,6 +1,6 @@
 # Design — 261126-1156 Errors outside requests
 
-The flow and the code are in [`docs/error-handling-improvements.md`](../../../docs/error-handling-improvements.md) §7. They are part of this design. This file gives the decisions.
+The overview and the diagram are in [`docs/error-handling.md`](../../../docs/error-handling.md) §7. This file gives the decisions (§1) and the shapes of the code (§2).
 
 ## 1. Decisions
 
@@ -11,9 +11,33 @@ The flow and the code are in [`docs/error-handling-improvements.md`](../../../do
 | EO3 | `uncaughtException` gives an `AppError` with the location `uncaughtException`. A startup error gives the source `startup`. In both cases, the handler logs the error, then calls `exit(1)`.                                                                                                                      | After an uncaught exception, the state of the app is not known. A back app that did not start cannot answer requests.                                              |
 | EO4 | There is no `runJob()` now. `openspec/project.md` §6 gets the rule: a promise with no `await` gets `.catch((e) => logError(toAppError(e, { source: 'job', location: '<name>' })))`.                                                                                                                              | The back app has no cron job or queue yet. The oxlint rule `no-floating-promises` already finds a promise with no `await`.                                         |
 
-## 2. Not in this change
+## 2. Shapes
 
-| Item                         | Where it goes                          |
-| ---------------------------- | -------------------------------------- |
-| `runJob()` with retries      | The first change with a job (docs §11) |
-| A graceful stop on `SIGTERM` | The change that adds a deployment      |
+```ts
+// apps/back/src/common/errors/process-error-handlers.ts
+export function registerProcessErrorHandlers(target = process, log = logError, exit = process.exit): void {
+  target.on('unhandledRejection', (reason) => log(toAppError(reason, { source: 'process', location: 'unhandledRejection' })));
+  target.on('uncaughtException', (error) => {
+    log(toAppError(error, { source: 'process', location: 'uncaughtException' }));
+    exit(1);
+  });
+}
+
+export function handleStartupError(error: unknown, log = logError, exit = process.exit): void {
+  log(toAppError(error, { source: 'startup' }));
+  exit(1);
+}
+```
+
+```ts
+// apps/back/src/main.ts
+registerProcessErrorHandlers();
+await bootstrap().catch((error: unknown) => handleStartupError(error));
+```
+
+## 3. Not in this change
+
+| Item                         | Where it goes                                             |
+| ---------------------------- | --------------------------------------------------------- |
+| `runJob()` with retries      | The first change with a job (`docs/error-handling.md` §9) |
+| A graceful stop on `SIGTERM` | The change that adds a deployment                         |

@@ -40,4 +40,4 @@ Today Node writes its own text for these errors, and a promise rejection that no
 - [x] 7. Writing rules — no banned word (script check). Sentences have 25 words or fewer, except lists of names. Active voice, present tense. no new glossary term.
 - [x] 8. Description — a feature explanation, then the limit of today. No history of the work.
 - [x] 9. Change ID — `261126-1156` is the only folder with this ID. The 52 scenario names of `error-handling` in the changes `261124-0853`, `261126-1154` and `261126-1156` are unique (script check).
-- [x] 10. Diagrams — this change has no diagram. The diagram of `docs/error-handling-improvements.md` §7 follows `diagrams.md` (rendered with Mermaid 11).
+- [x] 10. Diagrams — this change has no diagram. The diagram of `docs/error-handling.md` §7 follows `diagrams.md` (rendered with Mermaid 11).

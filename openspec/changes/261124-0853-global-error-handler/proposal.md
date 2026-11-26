@@ -42,4 +42,4 @@ Today the back app has no error codes. Each part of the code must find the statu
 - [x] 7. Writing rules — no banned word (script check). Sentences have 25 words or fewer, except lists of names. Active voice, present tense. 10 new glossary terms in `README.md` §10.
 - [x] 8. Description — a feature explanation, then the limit of today. No history of the work.
 - [x] 9. Change ID — `261124-0853` is the only folder with this ID. The 52 scenario names of `error-handling` in the changes `261124-0853`, `261126-1154` and `261126-1156` are unique (script check).
-- [x] 10. Diagrams — this change has no diagram. The diagrams of `docs/error-handling-improvements.md` §3–§4 follow `diagrams.md` (rendered with Mermaid 11).
+- [x] 10. Diagrams — this change has no diagram. The diagrams of `docs/error-handling.md` §1–§3 follow `diagrams.md` (rendered with Mermaid 11).

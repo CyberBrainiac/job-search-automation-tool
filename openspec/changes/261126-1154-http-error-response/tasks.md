@@ -24,7 +24,7 @@ Result (step 4): –
 - [ ] `pnpm-workspace.yaml` — add `shellEmulator: true` (EF9).
 - [ ] `openspec/project.md` §4 — add the registration row "Global exception filter: `apps/back/src/app.module.ts` (`providers`: `APP_FILTER`, `ERROR_HANDLERS`, `ERROR_LOGGER`)" (EF2).
 - [ ] `openspec/project.md` §8 — add a line: `pnpm dev` runs the back app with `NODE_ENV=development`, so an error response has the debug fields (EF9).
-- [ ] `docs/error-handling.md` — write it again from the code: the parts, the flow of a failed request, and the examples. Set the status to "done".
+- [ ] `docs/error-handling.md` — make §2–§5 agree with the code. Set the status line to "done" when the 4 error handling changes are implemented.
 
 ## 3. Checks
 
