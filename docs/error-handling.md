@@ -1,8 +1,8 @@
 # Error handling in the back app
 
-This page shows how the back app turns an error into one JSON error response. The rules are in the OpenSpec change [`261124-0853`](../openspec/changes/261124-0853-global-error-handler/proposal.md). The model is the error handling of the 13hunters back app.
+This page shows how the back app turns an error into one JSON error response. The model is the error handling of the 13hunters back app.
 
-Status: planned. The code does not exist yet.
+Status: out of date. The plan changed. The current design is [`error-handling-improvements.md`](error-handling-improvements.md), and the specs are the changes `261124-0853`, `261126-1154`, `261126-1155` and `261126-1156`. Change `261126-1154` writes this page again from the code.
 
 ## 1. Parts
 
