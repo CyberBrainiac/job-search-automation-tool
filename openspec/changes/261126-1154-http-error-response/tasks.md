@@ -4,12 +4,12 @@
 
 Use the data of the delta. Each `describe` is a requirement name, and each `it` is a scenario name.
 
-- [ ] `apps/back/src/common/filters/all-exceptions.filter.spec.ts` (NEW) — make the filter with `new AllExceptionsFilter(httpAdapterHost, backErrorHandlers, logSpy)`. The mock `ArgumentsHost` gives `getType()` and the HTTP request and response. The mock response has `headersSent`, `writableEnded` and `destroy: vi.fn()`. The mock `httpAdapter` has `reply: vi.fn()`. Use `vi.useFakeTimers()` for the clock. Set `process.env.NODE_ENV` in each test, and restore it after the test. Requirements: "Error response body", "Full body in development", "Safe body outside development", "Error log of a request", "Response that has already started", "Context that is not HTTP".
-- [ ] `apps/back/test/error-handling.e2e-spec.ts` (NEW) — "Global exception filter": "Unknown route". Start `AppModule` and send the request with supertest.
+- [x] `apps/back/src/common/filters/all-exceptions.filter.spec.ts` (NEW) — make the filter with `new AllExceptionsFilter(httpAdapterHost, backErrorHandlers, logSpy)`. The mock `ArgumentsHost` gives `getType()` and the HTTP request and response. The mock response has `headersSent`, `writableEnded` and `destroy: vi.fn()`. The mock `httpAdapter` has `reply: vi.fn()`. Use `vi.useFakeTimers()` for the clock. Set `process.env.NODE_ENV` in each test, and restore it after the test. Requirements: "Error response body", "Full body in development", "Safe body outside development", "Error log of a request", "Response that has already started", "Context that is not HTTP".
+- [x] `apps/back/test/error-handling.e2e-spec.ts` (NEW) — "Global exception filter": "Unknown route". Start `AppModule` and send the request with supertest.
 
 Run the tests. They must fail for the expected reason: `AllExceptionsFilter` does not exist, and `GET /no-such-route` returns the NestJS default body.
 
-Result (step 4): –
+Result (step 4): 2026-11-26. `pnpm --filter back test` fails as expected: `all-exceptions.filter.spec.ts` stops with `Cannot find module './all-exceptions.filter.js'`. The file has 13 tests, one for each scenario. `pnpm --filter back test:e2e` fails as expected: "Unknown route" gets the NestJS default body `{ statusCode, message, error }`.
 
 ## 2. Code (step 5)
 
