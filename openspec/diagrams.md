@@ -39,11 +39,13 @@ Use one shape for one meaning. Do not use other shapes.
 ## 4. Decisions
 
 1. The text of a decision is a short question that ends with `?`, for example `status is 500 or more?`.
-2. A decision has exactly two outgoing edges: `yes` and `no`. For more answers, use more decisions or label each edge with its value.
+2. A decision has exactly two outgoing edges: `yes` and `no`. For more answers, see rule 6.
 3. Label each outgoing edge of a decision. Use the words `yes` and `no` (lowercase). Add a short reason after a colon when it helps: `no: WebSocket, gRPC, bot`.
 4. **Same side for each decision.** `yes` goes to the left (or down), `no` goes to the right. In Mermaid, write the `yes` edge first and the `no` edge second, for each decision.
 5. **Each branch goes to its own node.** Do not draw an edge from a decision directly to the node where the branches join. The layout engine then puts that edge on a random side. Add a node for the branch that does nothing, for example `keep message`.
-6. Do the checks in the same order as the code. A diagram that shows a different order is a bug in the spec.
+6. A decision with more than two answers becomes a chain of yes/no decisions. Do not write a question like `What next?`.
+7. A chain of checks where the first match wins (if, else if) is a staircase: each `yes` goes down and left to its result, each `no` goes right to the next check.
+8. Do the checks in the same order as the code. A diagram that shows a different order is a bug in the spec.
 
 Example:
 
@@ -71,6 +73,8 @@ flowchart TD
 1. No colors and no `style` or `classDef` lines, except when a legend explains them. Color is never the only sign of a meaning.
 2. Node IDs are short and stable (`A`, `B`, `H1`). The text tells the meaning, not the ID.
 3. Write the nodes and edges in the order of the flow. This gives the layout engine a good start.
+4. Write the outgoing edges of a node right after the edge that makes the node. When a branch node is on the wrong side, this usually fixes it.
+5. A subgraph title is short (a folder or one or two words). The nodes cut off a long title.
 
 ## 7. Check
 

@@ -10,16 +10,16 @@ The types live in `@repo/shared`, so the back app and the front app use the same
 
 ```mermaid
 flowchart LR
-  subgraph shared["packages/shared (@repo/shared)"]
-    EC["ErrorCodes, ErrorCode"]
-    ER["ErrorResponse, ErrorMetadata, BaseResponse"]
-  end
-
   subgraph back["apps/back"]
     SVC["Controller or service"]
     CE["common/exceptions/custom.exception.ts<br/>CustomException"]
-    F["common/filters/all-exceptions.filter.ts<br/>AllExceptionsFilter"]
     AM["app.module.ts<br/>APP_FILTER provider"]
+    F["common/filters/all-exceptions.filter.ts<br/>AllExceptionsFilter"]
+  end
+
+  subgraph shared["packages/shared"]
+    EC["ErrorCodes, ErrorCode"]
+    ER["ErrorResponse, ErrorMetadata, BaseResponse"]
   end
 
   subgraph front["apps/front"]
@@ -30,8 +30,8 @@ flowchart LR
   CE -- "uses a code of" --> EC
   AM -- "registers" --> F
   F -- "builds" --> ER
-  UI -- "reads" --> ER
-  UI -- "compares metadata.errorCode with" --> EC
+  EC -- "the codes to compare<br/>with metadata.errorCode" --> UI
+  ER -- "the JSON body" --> UI
 ```
 
 | Part                  | Job                                                                                  |
@@ -70,27 +70,22 @@ A guard, a pipe or the router can also throw. For example, an unknown route make
 
 ```mermaid
 flowchart TD
-  A["An exception reaches AllExceptionsFilter"] --> B{"Is it an HttpException?"}
-
+  A(["An exception reaches AllExceptionsFilter"]) --> B{"Is it an HttpException?"}
   B -- "yes" --> C["status = exception.getStatus()<br/>message = response.message (a text or a list)"]
+  B -- "no: unexpected error" --> H["status = 500<br/>message = 'Internal server error'<br/>metadata.errorCode = INTERNAL_SERVER_ERROR"]
   C --> D{"Does the response have an errorCode?<br/>(only CustomException has one)"}
   D -- "yes" --> E["metadata.errorCode = the code"]
   D -- "no" --> G["no metadata.errorCode"]
-
-  B -- "no: unexpected error" --> H["status = 500<br/>message = 'Internal server error'<br/>metadata.errorCode = INTERNAL_SERVER_ERROR"]
-
   E --> I{"NODE_ENV is development?"}
   G --> I
   H --> I
   I -- "yes" --> J["add metadata.stackTrace"]
   I -- "no" --> K["no metadata.stackTrace"]
-
   J --> M{"status is 500 or more?"}
   K --> M
   M -- "yes" --> N["Logger.error: the real message and the stack"]
   M -- "no" --> O["Logger.warn: the status, the message and the path"]
-
-  N --> P["httpAdapter.reply(response, body, status)"]
+  N --> P(["httpAdapter.reply(response, body, status)"])
   O --> P
 ```
 

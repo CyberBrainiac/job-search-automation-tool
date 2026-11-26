@@ -218,15 +218,16 @@ export interface ErrorHandler {
 
 ```mermaid
 flowchart TD
-  E["A thrown value"] --> H0{"AggregateError or<br/>SuppressedError?"}
-  H0 -- "yes" --> R0["unwrap it (§4.1)<br/>each inner error goes through this chain"]
+  S(["A thrown value"]) --> H0{"AggregateError or<br/>SuppressedError?"}
+  H0 -- "yes" --> R0[["unwrap it (§4.1)<br/>each inner error goes through this chain"]]
   R0 -- "the code and status<br/>of the main inner error" --> A
   H0 -- "no" --> H1{"CustomException?"}
   H1 -- "yes" --> R1["its code"]
   H1 -- "no" --> H2{"Other HttpException?<br/>(router, guard, pipe)"}
-  H2 -- "yes, the message is a list" --> R2a["VALIDATION_FAILED<br/>and details"]
-  H2 -- "yes" --> R2b["CODE_BY_STATUS<br/>(its own status stays)"]
+  H2 -- "yes" --> H2L{"The message is a list?"}
   H2 -- "no" --> H3{"HTTP client error?<br/>(axios or fetch, later)"}
+  H2L -- "yes" --> R2a["VALIDATION_FAILED<br/>and details"]
+  H2L -- "no" --> R2b["CODE_BY_STATUS<br/>(its own status stays)"]
   H3 -- "yes" --> R3["EXTERNAL_API_ERROR or TIMEOUT<br/>never the status of the other site"]
   H3 -- "no" --> H4{"Telegram, gRPC or<br/>WebSocket error? (later)"}
   H4 -- "yes" --> R4["the code of its handler"]
@@ -236,7 +237,7 @@ flowchart TD
   H6 -- "yes" --> R6["INTERNAL_SERVER_ERROR<br/>type = the class name"]
   H6 -- "no" --> R7["INTERNAL_SERVER_ERROR<br/>type = UnknownError"]
   R1 & R2a & R2b & R3 & R4 & R5 & R6 & R7 --> T["ERROR_TABLE adds status, message, retryable"]
-  T --> A["AppError"]
+  T --> A(["AppError"])
 ```
 
 | Handler                                                          | When                                               |
@@ -411,8 +412,8 @@ Sentry (a later change) can be one more logger, or one more line in `nestErrorLo
 The filter catches only errors of a request. Other code needs its own `catch`. It uses the same `toAppError` and `logError`.
 
 ```mermaid
-flowchart LR
-  subgraph where["Code that runs outside a request"]
+flowchart TD
+  subgraph where["Outside a request"]
     J["Cron job, queue worker, timer"]
     P["Promise without await"]
     S["bootstrap() in main.ts"]
@@ -420,14 +421,15 @@ flowchart LR
   end
 
   J -- "runJob() catch" --> T["toAppError(error, { source })"]
-  P -- ".catch() or unhandledRejection" --> T
+  P -- ".catch() or<br/>unhandledRejection" --> T
   S -- "bootstrap().catch()" --> T
   U -- "uncaughtException" --> T
   T --> L["logError(appError)"]
-  L --> R{"What next?"}
-  R -- "a job, and appError.retryable" --> RT["run the job again"]
-  R -- "startup or uncaughtException" --> EX["process.exit(1)"]
-  R -- "other" --> GO["continue"]
+  L --> R1{"A job, and<br/>appError.retryable?"}
+  R1 -- "yes" --> RT(["run the job again"])
+  R1 -- "no" --> R2{"Startup or<br/>uncaughtException?"}
+  R2 -- "yes" --> EX(["process.exit(1)"])
+  R2 -- "no" --> GO(["continue"])
 ```
 
 ```ts
