@@ -14,21 +14,21 @@ Next step: you edit this page. Then we write the spec.
 
 ## 1. The improvements
 
-| #   | Improvement                                                                                                                                                     | Source                                          |
-| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
-| 1   | Each error becomes one `AppError` object. A small handler converts each error type.                                                                             | my-thought 1                                    |
-| 2   | One table of error codes. Each code has a status, a fixed message and a retry flag.                                                                             | my-thought 2, your message                      |
-| 3   | Each error response has an `errorCode`. A NestJS exception gets the code of its status.                                                                         | my-thought 4                                    |
-| 4   | The client gets the fixed message of the code, never the real message. Outside development, a 5xx response has no message.                                      | your message                                    |
-| 5   | `exceptionName` is removed.                                                                                                                                     | my-thought 3                                    |
-| 6   | Logging is a separate function. The filter gets it in its constructor. A log line has no line breaks.                                                           | my-thought 5, your message                      |
-| 7   | The filter adds the debug fields to each response. In `development`, the body stays full. In other environments, it removes them and then checks the status.    | my-thought 6                                    |
-| 8   | A context that is not HTTP (WebSocket, gRPC, bot): the filter makes the `AppError` and logs it. It sends no reply.                                              | your message (changes earlier 1)                |
-| 9   | The response has already started: the filter only logs and closes it.                                                                                           | earlier 2, no change                            |
-| 10  | `path` has no query string, in the response and in the log.                                                                                                     | earlier 4, no change                            |
-| 11  | The names of the security tests have the SEC IDs of the security guide.                                                                                         | earlier 6, no change                            |
-| 12  | Code that runs outside a request (cron, queue, timer, promise without `await`, startup) uses the same `AppError` and logger.                                    | earlier review (what is not caught)             |
-| 13  | `AggregateError` and `SuppressedError` are unwrapped. Each inner error is logged. The first inner error with a known code gives the code and the status (§4.1). | your question of 2026-11-24 in the project chat |
+| #   | Improvement                                                                                                                                                                                                     | Source                                          |
+| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| 1   | Each error becomes one `AppError` object. A small handler converts each error type.                                                                                                                             | my-thought 1                                    |
+| 2   | One table of error codes. Each code has a status, a default message and a retry flag.                                                                                                                           | my-thought 2, your message                      |
+| 3   | Each error response has an `errorCode`. A NestJS exception gets the code of its status.                                                                                                                         | my-thought 4                                    |
+| 4   | `AppError` and the response keep the real message (a custom message or a validator message), so the user can fix the problem. Outside development, a 5xx response gets the default message of its code instead. | your messages of 2026-11-24 and 2026-11-26      |
+| 5   | `exceptionName` is removed.                                                                                                                                                                                     | my-thought 3                                    |
+| 6   | Logging is a separate function. The filter gets it in its constructor. A log line has no line breaks.                                                                                                           | my-thought 5, your message                      |
+| 7   | The filter adds the debug fields to each response. In `development`, the body stays full. In other environments, it removes them and then checks the status.                                                    | my-thought 6                                    |
+| 8   | A context that is not HTTP (WebSocket, gRPC, bot): the filter makes the `AppError` and logs it. It sends no reply.                                                                                              | your message (changes earlier 1)                |
+| 9   | The response has already started: the filter only logs and closes it.                                                                                                                                           | earlier 2, no change                            |
+| 10  | `path` has no query string, in the response and in the log.                                                                                                                                                     | earlier 4, no change                            |
+| 11  | The names of the security tests have the SEC IDs of the security guide.                                                                                                                                         | earlier 6, no change                            |
+| 12  | Code that runs outside a request (cron, queue, timer, promise without `await`, startup) uses the same `AppError` and logger.                                                                                    | earlier review (what is not caught)             |
+| 13  | `AggregateError` and `SuppressedError` are unwrapped. Each inner error is logged. The first inner error with a known code gives the code and the status (§4.1).                                                 | your question of 2026-11-24 in the project chat |
 
 I found no conflict between your message and `my-thought.md`. Some points conflict with the draft spec or are not clear. They are in §9.
 
@@ -104,16 +104,16 @@ classDiagram
     stackTrace: string
   }
   ERROR_TABLE --> ErrorDefinition : one for each ErrorCode
-  AppError ..> ErrorDefinition : copies status, message, retryable
+  AppError ..> ErrorDefinition : copies status, retryable, default message
   AppError ..> ErrorResponse : toErrorResponse()
   ErrorResponse *-- ErrorMetadata
 ```
 
 ### 3.1 The table of error codes
 
-`packages/shared/src/error-codes.ts`. This is your `STATUS_BY_CODE` (my-thought 2), with the fixed message and the retry flag added.
+`packages/shared/src/error-codes.ts`. This is your `STATUS_BY_CODE` (my-thought 2), with the default message and the retry flag added.
 
-| Code                      | Status | Fixed message                                | Retry | Who uses it                     |
+| Code                      | Status | Default message                              | Retry | Who uses it                     |
 | ------------------------- | ------ | -------------------------------------------- | ----- | ------------------------------- |
 | `BAD_REQUEST`             | 400    | The request is not valid.                    | no    | NestJS 400                      |
 | `VALIDATION_FAILED`       | 400    | The request data is not valid.               | no    | `ValidationPipe` (message list) |
@@ -123,7 +123,7 @@ classDiagram
 | `RESOURCE_NOT_FOUND`      | 404    | The item was not found.                      | no    | `CustomException`               |
 | `RESOURCE_ALREADY_EXISTS` | 409    | The item already exists.                     | no    | `CustomException`               |
 | `TOO_MANY_REQUESTS`       | 429    | Too many requests. Try again later.          | yes   | NestJS 429 (rate limit)         |
-| `INTERNAL_SERVER_ERROR`   | 500    | Something went wrong. Try again later.       | no    | each unexpected error           |
+| `INTERNAL_SERVER_ERROR`   | 500    | Sorry, something bad happened. Try again.    | no    | each unexpected error           |
 | `EXTERNAL_API_ERROR`      | 502    | An external service failed. Try again later. | yes   | HTTP client handler             |
 | `TIMEOUT`                 | 504    | The request took too long. Try again later.  | yes   | `TimeoutError`                  |
 
@@ -146,7 +146,12 @@ export const CODE_BY_STATUS: Partial<Record<number, ErrorCode>> = {
 
 One status can have more than one code (`404`: `NOT_FOUND` and `RESOURCE_NOT_FOUND`). So `CODE_BY_STATUS` gives one default code for each status.
 
-A 5xx code has a fixed message too. The back app sends it only in `development` (§5). The front app can show it in each environment, because the table is shared.
+The default message has two jobs:
+
+- An error with no message of its own gets it. For example, `new CustomException(ErrorCodes.RESOURCE_NOT_FOUND)`, or a `ValidationPipe` error (its list goes to `details`).
+- Outside development, it replaces the real message of each 5xx response (§5). The real message of a 5xx error can show internal details (a file path, a database message).
+
+The front app can show the default message too, because the table is shared.
 
 ### 3.2 `AppError`
 
@@ -158,14 +163,14 @@ export type ErrorSource = 'http' | 'ws' | 'rpc' | 'bot' | 'job' | 'startup' | 'p
 export interface AppError {
   code: ErrorCode;
   status: number; // from ERROR_TABLE. A NestJS exception keeps its own status.
-  message: string; // the fixed message of the code
+  message: string; // the real message. Without one, the default message of the code.
   details?: string[]; // the list of validation messages (§9, Q1)
   retryable: boolean; // from ERROR_TABLE
   source: ErrorSource; // where the error happened
   type: string; // the class name: 'TypeError', 'NotFoundException', 'UnknownError'
   timestamp: string; // ISO 8601
   location?: string; // the HTTP path without the query, or the job name
-  cause?: { message: string; stack?: string }; // the real error. Log only, never in a response.
+  cause?: { message: string; stack?: string }; // the original error and its stack. Log only, never in a response.
   inner?: AppError[]; // the inner errors of AggregateError and SuppressedError (§4.1). Log only.
 }
 ```
@@ -181,7 +186,7 @@ The front app can use `AppError` too: its API client can turn an `ErrorResponse`
 ```ts
 export interface ErrorResponse extends BaseResponse<null> {
   success: false;
-  message?: string; // the fixed message. Absent for 5xx outside development.
+  message: string; // the real message. Outside development, a 5xx response gets the default message.
   details?: string[]; // §9, Q1
   metadata: ErrorMetadata;
 }
@@ -199,7 +204,7 @@ export interface ErrorMetadata {
 
 ## 4. Handlers: from any error to `AppError`
 
-A handler knows one error type. It only picks the code and reads the real error. The table gives the status, the message and the retry flag, so a handler cannot invent a status.
+A handler knows one error type. It picks the code and reads the real error and its message. The table gives the status, the retry flag and the default message, so a handler cannot invent a status.
 
 ```ts
 export interface ErrorHandler {
@@ -208,6 +213,7 @@ export interface ErrorHandler {
     code: ErrorCode;
     type: string;
     status?: number; // only a NestJS exception has its own status
+    message?: string; // the real message, when the error has a text
     details?: string[];
     cause?: { message: string; stack?: string };
   };
@@ -236,7 +242,7 @@ flowchart TD
   H5 -- "no" --> H6{"Error?"}
   H6 -- "yes" --> R6["INTERNAL_SERVER_ERROR<br/>type = the class name"]
   H6 -- "no" --> R7["INTERNAL_SERVER_ERROR<br/>type = UnknownError"]
-  R1 & R2a & R2b & R3 & R4 & R5 & R6 & R7 --> T["ERROR_TABLE adds status, message, retryable"]
+  R1 & R2a & R2b & R3 & R4 & R5 & R6 & R7 --> T["ERROR_TABLE adds status, retryable<br/>and the default message when there is no message"]
   T --> A(["AppError"])
 ```
 
@@ -324,22 +330,23 @@ flowchart TD
   D -- "yes" --> E{"Has the response started?<br/>(headersSent)"}
   D -- "no: WebSocket, gRPC, bot" --> X(["Stop. No reply for now."])
   E -- "yes" --> Y(["Close the response. Stop."])
-  E -- "no" --> G["body = toErrorResponse(appError)<br/>path without the query<br/>metadata has stackTrace and exceptionType"]
+  E -- "no" --> G["body = toErrorResponse(appError)<br/>the real message, path without the query,<br/>stackTrace and exceptionType"]
   G --> J{"NODE_ENV is development?"}
   J -- "yes" --> J1["keep the full ErrorResponse"]
   J1 --> L(["httpAdapter.reply(response, body, status)"])
   J -- "no" --> K["remove stackTrace and exceptionType"]
   K --> H{"status is 500 or more?"}
-  H -- "yes" --> I["remove message"]
-  H -- "no" --> H1["keep message"]
+  H -- "yes" --> I["replace message with<br/>the default message of the code"]
+  H -- "no" --> H1["keep the real message"]
   I --> L
   H1 --> L
 ```
 
 - The log comes first, so an error that gets no reply (not HTTP, or the response has started) is still in the log.
-- `NODE_ENV` is `development`: the filter keeps the full `ErrorResponse` (with `message`, `stackTrace` and `exceptionType`) and sends the reply.
-- `NODE_ENV` is not `development`: the filter removes `stackTrace` and `exceptionType`. Then it checks the status. A status of 500 or more: it removes `message`. A lower status keeps it. Then the filter sends the reply.
-- `message` is always the fixed message of the code (§3), never the real message. So `new InternalServerErrorException(err.message)` does not show `err.message` to the client, also in `development`. The real message is in the log and in the first line of `stackTrace`.
+- `NODE_ENV` is `development`: the filter keeps the full `ErrorResponse` (the real `message`, `stackTrace` and `exceptionType`) and sends the reply.
+- `NODE_ENV` is not `development`: the filter removes `stackTrace` and `exceptionType`. Then it checks the status. A status of 500 or more: it replaces `message` with the default message of the code (§3.1). A lower status keeps the real message. Then the filter sends the reply.
+- So in production, `new InternalServerErrorException(err.message)` does not show `err.message` to the client.
+- A 4xx message goes to the client in each environment. Write it for the user, and do not put internal details (an ID of another user, a file path, a token) into it.
 
 The handlers and the logger go into the filter constructor (my-thought 1 and 5):
 
@@ -470,7 +477,7 @@ A business error. The request was `GET /vacancies/42?token=abc`:
   "success": false,
   "data": null,
   "statusCode": 404,
-  "message": "The item was not found.",
+  "message": "Vacancy 42 not found",
   "metadata": {
     "timestamp": "2026-11-24T08:00:00.000Z",
     "path": "/vacancies/42",
@@ -479,9 +486,9 @@ A business error. The request was `GET /vacancies/42?token=abc`:
 }
 ```
 
-The service threw `new CustomException(ErrorCodes.RESOURCE_NOT_FOUND, 'Vacancy 42 not found')`. The text `Vacancy 42 not found` is in the log only.
+The service threw `new CustomException(ErrorCodes.RESOURCE_NOT_FOUND, 'Vacancy 42 not found')`. Without the text, the message is the default message `The item was not found.`
 
-A validation error:
+A validation error. The list of the pipe is in `details`, and `message` is the default message:
 
 ```json
 {
@@ -498,13 +505,14 @@ A validation error:
 }
 ```
 
-An unexpected error in production (no message, no debug fields):
+An unexpected error in production (the default message, no debug fields):
 
 ```json
 {
   "success": false,
   "data": null,
   "statusCode": 500,
+  "message": "Sorry, something bad happened. Try again.",
   "metadata": {
     "timestamp": "2026-11-24T08:00:00.000Z",
     "path": "/vacancies/42",
@@ -513,14 +521,14 @@ An unexpected error in production (no message, no debug fields):
 }
 ```
 
-The same error in development (the full body):
+The same error in development (the real message and the debug fields):
 
 ```json
 {
   "success": false,
   "data": null,
   "statusCode": 500,
-  "message": "Something went wrong. Try again later.",
+  "message": "Cannot read properties of undefined (reading 'id')",
   "metadata": {
     "timestamp": "2026-11-24T08:00:00.000Z",
     "path": "/vacancies/42",
@@ -537,9 +545,9 @@ Please answer or edit each row. "My proposal" is what this page uses now.
 
 | #   | Question                                                                                                                                                                                                                  | My proposal                                                                                                                                                                                     |
 | --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Q1  | **Conflict.** Your message: a fixed message for each code. Draft spec, requirement "List of messages": the `ValidationPipe` list stays in `message`. With a fixed message, the front app cannot see which field is wrong. | A fixed `message` and the list in a new field `details`. The list is safe: the pipe makes it from the DTO rules.                                                                                |
-| Q2  | **Conflict.** Draft EH5: `CustomException(message, status, errorCode)`. With a fixed message and a status from the table, 2 parameters have no job.                                                                       | `new CustomException(code, logMessage?)`. The status comes from the table. `logMessage` goes to the log only.                                                                                   |
-| Q3  | **Not clear.** Your message: "don't return message for 5xx". I read it as "the 5xx body has no `message` field".                                                                                                          | No `message` field outside `development`. The front app shows `ERROR_TABLE[code].message` from `@repo/shared`.                                                                                  |
+| Q1  | **Conflict.** Your message: a fixed message for each code. Draft spec, requirement "List of messages": the `ValidationPipe` list stays in `message`. With a fixed message, the front app cannot see which field is wrong. | The list in a new field `details`, and the default message in `message`. The list is safe: the pipe makes it from the DTO rules.                                                                |
+| Q2  | **Conflict.** Draft EH5: `CustomException(message, status, errorCode)`. With a status from the table, the `status` parameter has no job.                                                                                  | `new CustomException(code, message?)`. The status comes from the table. `message` goes to the client. Without it, the client gets the default message of the code.                              |
+| Q3  | **Decided** (your message of 2026-11-26). A 5xx response outside development has a fixed message, not the real one.                                                                                                       | The default message of its code from `ERROR_TABLE`, for example `Sorry, something bad happened. Try again.` for `INTERNAL_SERVER_ERROR`.                                                        |
 | Q4  | **Conflict.** Earlier 3: outside development, `exceptionType` of an unexpected error is `InternalServerError`. Now each response has `errorCode`, so the front app does not need `exceptionType`.                         | `exceptionType` only in development, like `stackTrace` (my-thought 6).                                                                                                                          |
 | Q5  | **Conflict.** my-thought 1: the filter gets handlers for axios, Telegram and gRPC errors. Draft EH8: the filter has no rule for an HTTP client library, and the service converts the error.                               | Follow my-thought 1. EH8 changes. Its reason stays: the axios handler gives `502` or `504`, never the status of the other site. A service can still catch an error when it wants a better code. |
 | Q6  | **Conflict.** my-thought 2 uses `HttpStatus.NOT_FOUND` of NestJS. `@repo/shared` cannot import NestJS, because the front app does not have it.                                                                            | Numbers (`404`) in the shared table. The back app can still write `HttpStatus.NOT_FOUND`, because its value is `404`.                                                                           |
@@ -551,10 +559,10 @@ Please answer or edit each row. "My proposal" is what this page uses now.
 
 | Draft                                                       | Change                                                                                                                    |
 | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| EH3 `ErrorResponse`, `ErrorMetadata`                        | `errorCode` is required. No `exceptionName`. `message` is optional and a string only. New `details`. `path` has no query. |
+| EH3 `ErrorResponse`, `ErrorMetadata`                        | `errorCode` is required. No `exceptionName`. `message` is required and a string only. New `details`. `path` has no query. |
 | EH4 `ErrorCodes`                                            | New `ERROR_TABLE` and `CODE_BY_STATUS`. New `AppError`.                                                                   |
-| EH5 `CustomException(message, status, errorCode)`           | `CustomException(code, logMessage?)` (Q2).                                                                                |
-| EH6 a fixed message for an unexpected error                 | A fixed message for each code. No message for 5xx outside development.                                                    |
+| EH5 `CustomException(message, status, errorCode)`           | `CustomException(code, message?)` (Q2).                                                                                   |
+| EH6 a fixed message for an unexpected error                 | The real message goes to the client. Outside development, a 5xx response gets the default message of its code.            |
 | EH7 `stackTrace` in development                             | `stackTrace` and `exceptionType` in development. The filter removes them at the end.                                      |
 | EH8 no rule for an HTTP client library in the filter        | Handlers (Q5).                                                                                                            |
 | Requirement "Error log" (the filter calls `Logger`)         | The filter calls the logger function. The level rules move to the tests of the logger.                                    |
