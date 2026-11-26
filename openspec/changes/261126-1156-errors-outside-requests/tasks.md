@@ -4,11 +4,11 @@
 
 Use the data of the delta. Each `describe` is a requirement name, and each `it` is a scenario name.
 
-- [ ] `apps/back/src/common/errors/process-error-handlers.spec.ts` (NEW) — call `registerProcessErrorHandlers(target, logSpy, exitSpy)` with `new EventEmitter()` from `node:events` as the target. Send the events with `target.emit()`. Call `handleStartupError(error, logSpy, exitSpy)`. Requirements: "Promise rejection that no code catches", "Uncaught exception", "Startup error".
+- [x] `apps/back/src/common/errors/process-error-handlers.spec.ts` (NEW) — call `registerProcessErrorHandlers(target, logSpy, exitSpy)` with `new EventEmitter()` from `node:events` as the target. Send the events with `target.emit()`. Call `handleStartupError(error, logSpy, exitSpy)`. Requirements: "Promise rejection that no code catches", "Uncaught exception", "Startup error".
 
 Run the tests. They must fail for the expected reason: `process-error-handlers.ts` does not exist.
 
-Result (step 4): –
+Result (step 4): 2026-11-26. `pnpm --filter back test` fails as expected: `process-error-handlers.spec.ts` stops with `Cannot find module './process-error-handlers.js'`. The file has 3 tests, one for each scenario.
 
 ## 2. Code (step 5)
 

@@ -1,6 +1,6 @@
 # 261126-1156 — Errors outside requests
 
-Status: Reviewed
+Status: Tested
 Type: Feature
 Depends on: 261124-0853 (`toAppError()`, `logError()`)
 Decisions: EO1–EO4 (`design.md` §1)
