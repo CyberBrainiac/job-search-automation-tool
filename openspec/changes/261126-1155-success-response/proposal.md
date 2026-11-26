@@ -1,6 +1,6 @@
 # 261126-1155 — Success response body
 
-Status: Draft
+Status: Reviewed
 Type: Feature
 Depends on: 261126-1154 (`BaseResponse` in `packages/shared/src/api-response.ts`)
 Decisions: RI1–RI5 (`design.md` §1)

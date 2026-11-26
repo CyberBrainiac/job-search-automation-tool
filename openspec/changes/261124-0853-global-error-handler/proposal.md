@@ -1,6 +1,6 @@
 # 261124-0853 — Error model and error log in the back app
 
-Status: Draft
+Status: Reviewed
 Type: Feature
 Depends on: none
 Decisions: EH1–EH11 (`design.md` §1)
