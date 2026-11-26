@@ -4,12 +4,14 @@
 
 Use the data of the delta. Each `describe` is a requirement name, and each `it` is a scenario name.
 
-- [ ] `apps/back/src/common/errors/to-app-error.spec.ts` (NEW) — call `toAppError()` with the context `{ source: 'http', location: '/example' }`, except where a scenario gives another context. Use `vi.useFakeTimers()` and `vi.setSystemTime()` for the clock. Make a `SuppressedError` with `Object.assign(new Error('An error was suppressed during disposal.'), { name: 'SuppressedError', suppressed, error })`, because Node 22 has no `SuppressedError`. Requirements: "Business error", "Code of an HTTP exception", "Message of an HTTP exception", "Validation messages", "Unexpected error", "Timeout error", "Cause of an error", "Suppressed error", "Aggregate error", "Safe conversion".
-- [ ] `apps/back/src/common/errors/error-logger.spec.ts` (NEW) — call `logError()` with `AppError` objects. Spy on `Logger.prototype.error`, `Logger.prototype.warn` and `console.error`. Set `process.env.NODE_ENV` in each test, and restore it after the test. Requirements: "Level of the error log", "One line for one error", "Safe logger".
+- [x] `apps/back/src/common/errors/to-app-error.spec.ts` (NEW) — call `toAppError()` with the context `{ source: 'http', location: '/example' }`, except where a scenario gives another context. Use `vi.useFakeTimers()` and `vi.setSystemTime()` for the clock. Make a `SuppressedError` with `Object.assign(new Error('An error was suppressed during disposal.'), { name: 'SuppressedError', suppressed, error })`, because Node 22 has no `SuppressedError`. Requirements: "Business error", "Code of an HTTP exception", "Message of an HTTP exception", "Validation messages", "Unexpected error", "Timeout error", "Cause of an error", "Suppressed error", "Aggregate error", "Safe conversion".
+- [x] `apps/back/src/common/errors/error-logger.spec.ts` (NEW) — call `logError()` with `AppError` objects. Spy on `Logger.prototype.error`, `Logger.prototype.warn` and `console.error`. Set `process.env.NODE_ENV` in each test, and restore it after the test. Requirements: "Level of the error log", "One line for one error", "Safe logger".
 
 Run the tests. They must fail for the expected reason: the files `to-app-error.ts`, `error-logger.ts` and `custom.exception.ts` do not exist.
 
-Result (step 4): –
+- [x] `apps/back/vitest.config.ts` and `apps/back/vitest.config.e2e.ts` — the alias `@repo/shared` points to `packages/shared/src/index.ts`, so the tests need no build of the package.
+
+Result (step 4): 2026-11-26. `pnpm --filter back test` fails as expected: the 2 spec files stop with `Cannot find module './custom.exception.js'` and `Cannot find module './error-logger.js'`. The 2 files have 35 tests, one for each scenario (26 in `to-app-error.spec.ts`, 9 in `error-logger.spec.ts`).
 
 ## 2. Code (step 5)
 
