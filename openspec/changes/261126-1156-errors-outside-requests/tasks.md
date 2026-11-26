@@ -12,9 +12,9 @@ Result (step 4): 2026-11-26. `pnpm --filter back test` fails as expected: `proce
 
 ## 2. Code (step 5)
 
-- [ ] `apps/back/src/common/errors/process-error-handlers.ts` (NEW) — `registerProcessErrorHandlers()` and `handleStartupError()` (EO1, EO2, EO3).
-- [ ] `apps/back/src/main.ts` — call `registerProcessErrorHandlers()` before `bootstrap()`. Replace `await bootstrap();` with `await bootstrap().catch((error: unknown) => handleStartupError(error));` (EO1).
-- [ ] `openspec/project.md` §6 — add the rule for a promise with no `await` to the row "Errors" (EO4).
+- [x] `apps/back/src/common/errors/process-error-handlers.ts` (NEW) — `registerProcessErrorHandlers()` and `handleStartupError()` (EO1, EO2, EO3).
+- [x] `apps/back/src/main.ts` — call `registerProcessErrorHandlers()` before `bootstrap()`. Replace `await bootstrap();` with `await bootstrap().catch((error: unknown) => handleStartupError(error));` (EO1).
+- [x] `openspec/project.md` §6 — add the rule for a promise with no `await` to the row "Errors" (EO4).
 
 ## 3. Checks
 
@@ -30,4 +30,4 @@ pnpm build
 pnpm lint
 ```
 
-Result (step 5): –
+Result (step 5): 2026-11-26. All commands pass: `pnpm --filter back test` (5 files, 52 tests), `pnpm build` (3 packages), `pnpm lint` (0 warnings, 0 errors). A manual check of `node dist/main.js` on a port in use writes the `startup` log line and stops with the exit code 1.

@@ -2,7 +2,7 @@
 
 This page explains how the back app handles errors: where an error goes, what the client gets and what the log shows. The specs (§10) hold the code shapes, the decisions and the test scenarios.
 
-Status: in progress. The changes `261124-0853` (error model and error log) and `261126-1154` (HTTP error response) are `Implemented`. The changes `261126-1155` and `261126-1156` are `Reviewed`, and their code does not exist yet.
+Status: in progress. The changes `261124-0853` (error model and error log), `261126-1154` (HTTP error response) and `261126-1156` (errors outside requests) are `Implemented`. Change `261126-1155` is `Reviewed`, and its code does not exist yet.
 
 **Client** is the program that sends a request (the front app). **Customer** is the person who uses the front app. The glossary is in `openspec/README.md` §10.
 
