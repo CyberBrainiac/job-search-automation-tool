@@ -33,3 +33,13 @@ export interface ErrorDebug {
   stackTrace?: string;
   cause?: ErrorCause;
 }
+
+// The success body (openspec change 261126-1155, RI2).
+
+/** The body of a request that ends with no exception. */
+export interface SuccessResponse<T> extends BaseResponse<T> {
+  success: true;
+}
+
+/** What the front app gets. `success` tells the two shapes apart. */
+export type ApiResponse<T> = SuccessResponse<T> | ErrorResponse;

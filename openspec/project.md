@@ -68,10 +68,11 @@ The back app has no feature module yet. The first change that adds one follows t
 
 ### Registration steps
 
-| New item                | Register it in                                                                              |
-| ----------------------- | ------------------------------------------------------------------------------------------- |
-| Module                  | `apps/back/src/app.module.ts` (`imports`)                                                   |
-| Global exception filter | `apps/back/src/app.module.ts` (`providers`: `APP_FILTER`, `ERROR_HANDLERS`, `ERROR_LOGGER`) |
+| New item                    | Register it in                                                                              |
+| --------------------------- | ------------------------------------------------------------------------------------------- |
+| Module                      | `apps/back/src/app.module.ts` (`imports`)                                                   |
+| Global exception filter     | `apps/back/src/app.module.ts` (`providers`: `APP_FILTER`, `ERROR_HANDLERS`, `ERROR_LOGGER`) |
+| Global response interceptor | `apps/back/src/app.module.ts` (`providers`: `APP_INTERCEPTOR`)                              |
 
 ## 5. Front registration steps
 

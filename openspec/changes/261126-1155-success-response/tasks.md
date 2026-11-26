@@ -13,11 +13,11 @@ Result (step 4): 2026-11-26. `pnpm --filter back test` fails as expected: `respo
 
 ## 2. Code (step 5)
 
-- [ ] `packages/shared/src/api-response.ts` — add `SuccessResponse<T>` and `ApiResponse<T>` (RI2).
-- [ ] `packages/shared/src/index.ts` — add the type exports of `SuccessResponse` and `ApiResponse` (RI2).
-- [ ] `apps/back/src/common/interceptors/response.interceptor.ts` (NEW) — `ResponseInterceptor` (RI3, RI4).
-- [ ] `apps/back/src/app.module.ts` — add `{ provide: APP_INTERCEPTOR, useClass: ResponseInterceptor }` to `providers` (RI1).
-- [ ] `openspec/project.md` §4 — add the registration row "Global response interceptor: `apps/back/src/app.module.ts` (`providers`, `APP_INTERCEPTOR`)" (RI1).
+- [x] `packages/shared/src/api-response.ts` — add `SuccessResponse<T>` and `ApiResponse<T>` (RI2).
+- [x] `packages/shared/src/index.ts` — add the type exports of `SuccessResponse` and `ApiResponse` (RI2).
+- [x] `apps/back/src/common/interceptors/response.interceptor.ts` (NEW) — `ResponseInterceptor` (RI3, RI4).
+- [x] `apps/back/src/app.module.ts` — add `{ provide: APP_INTERCEPTOR, useClass: ResponseInterceptor }` to `providers` (RI1).
+- [x] `openspec/project.md` §4 — add the registration row "Global response interceptor: `apps/back/src/app.module.ts` (`providers`, `APP_INTERCEPTOR`)" (RI1).
 - [ ] At the archive (README §9): make `openspec/specs/api-response/spec.md`. Its purpose: the back app sends each successful response in one shape. The front app reads the data and the status in the same way for each route.
 
 ## 3. Checks
@@ -38,4 +38,4 @@ pnpm build
 pnpm lint
 ```
 
-Result (step 5): –
+Result (step 5): 2026-11-26. All commands pass: `pnpm --filter back test` (6 files, 58 tests), `pnpm --filter back test:e2e` (2 files, 2 tests), `pnpm build` (3 packages), `pnpm lint` (0 warnings, 0 errors).

@@ -1,10 +1,12 @@
 // Public entry of @repo/shared. Export every shared file from here.
 // Relative imports need the .js extension (nodenext).
 export type {
+  ApiResponse,
   BaseResponse,
   ErrorDebug,
   ErrorMetadata,
   ErrorResponse,
+  SuccessResponse,
 } from './api-response.js';
 export type {
   AppError,
