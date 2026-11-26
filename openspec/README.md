@@ -300,6 +300,7 @@ Do this pass at the end of step 2. Write the result in the `Validation` section 
 8. The description follows the description rules in section 3: a feature explanation, a bug report, or both, with no history of the work.
 9. The change ID is unique in `changes/` and `changes/archive/` (section 2). Check it again after a merge of two branches.
 10. Each diagram follows [`diagrams.md`](diagrams.md).
+11. Each new endpoint, Server Action and page with data has the security scenarios of `docs/security/guide.md` (SEC-00.1).
 
 ## 9. Archive procedure
 
