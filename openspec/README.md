@@ -13,6 +13,7 @@ This folder holds the specifications of Job Search Automation Tool: the back app
 openspec/
 ├── README.md              # This file: workflow, formats, writing rules, glossary, checklist
 ├── project.md             # Project context: product, stack, folders, conventions, commands
+├── diagrams.md            # Rules for Mermaid diagrams in specs, designs and docs
 ├── specs/                 # Current truth for each capability (filled when a change is archived)
 │   └── <capability>/spec.md   # Purpose + requirements
 └── changes/
@@ -298,6 +299,7 @@ Do this pass at the end of step 2. Write the result in the `Validation` section 
 7. The text follows the writing rules in section 6.
 8. The description follows the description rules in section 3: a feature explanation, a bug report, or both, with no history of the work.
 9. The change ID is unique in `changes/` and `changes/archive/` (section 2). Check it again after a merge of two branches.
+10. Each diagram follows [`diagrams.md`](diagrams.md).
 
 ## 9. Archive procedure
 

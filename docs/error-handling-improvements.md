@@ -22,7 +22,7 @@ Next step: you edit this page. Then we write the spec.
 | 4   | The client gets the fixed message of the code, never the real message. A 5xx response has no message.                                                           | your message                                    |
 | 5   | `exceptionName` is removed.                                                                                                                                     | my-thought 3                                    |
 | 6   | Logging is a separate function. The filter gets it in its constructor. A log line has no line breaks.                                                           | my-thought 5, your message                      |
-| 7   | The filter adds the debug fields to each response. At the end, before the reply, it removes them when `NODE_ENV` is not `development`.                          | my-thought 6                                    |
+| 7   | The filter adds the debug fields to each response. Then, before the status check, it removes them when `NODE_ENV` is not `development`.                         | my-thought 6                                    |
 | 8   | A context that is not HTTP (WebSocket, gRPC, bot): the filter makes the `AppError` and logs it. It sends no reply.                                              | your message (changes earlier 1)                |
 | 9   | The response has already started: the filter only logs and closes it.                                                                                           | earlier 2, no change                            |
 | 10  | `path` has no query string, in the response and in the log.                                                                                                     | earlier 4, no change                            |
@@ -317,24 +317,28 @@ export function toAppError(error: unknown, context: ErrorContext): AppError {
 
 ```mermaid
 flowchart TD
-  A["An exception reaches AllExceptionsFilter"] --> B["appError = toAppError(exception, context)"]
+  A(["An exception reaches AllExceptionsFilter"]) --> B["appError = toAppError(exception, context)"]
   B --> C["logError(appError)<br/>the logger decides the level and the shape"]
   C --> D{"Is the context HTTP?"}
-  D -- "no: WebSocket, gRPC, bot" --> X["Stop. No reply for now."]
   D -- "yes" --> E{"Has the response started?<br/>(headersSent)"}
-  E -- "yes" --> Y["Close the response. Stop."]
+  D -- "no: WebSocket, gRPC, bot" --> X(["Stop. No reply for now."])
+  E -- "yes" --> Y(["Close the response. Stop."])
   E -- "no" --> G["body = toErrorResponse(appError)<br/>path without the query<br/>metadata has stackTrace and exceptionType"]
-  G --> H{"status is 500 or more?"}
-  H -- "yes" --> I["remove message"]
-  H -- "no" --> J{"NODE_ENV is development?"}
-  I --> J
+  G --> J{"NODE_ENV is development?"}
+  J -- "yes" --> J1["keep the full ErrorResponse"]
   J -- "no" --> K["remove stackTrace and exceptionType"]
-  J -- "yes" --> L["httpAdapter.reply(response, body, status)"]
-  K --> L
+  J1 --> H{"status is 500 or more?"}
+  K --> H
+  H -- "yes" --> I["remove message"]
+  H -- "no" --> H1["keep message"]
+  I --> L(["httpAdapter.reply(response, body, status)"])
+  H1 --> L
 ```
 
 - The log comes first, so an error that gets no reply (not HTTP, or the response has started) is still in the log.
-- The `NODE_ENV` check is the last step before the reply (my-thought 6).
+- The body checks come in this order: first `NODE_ENV`, then the status. Then the filter sends the reply.
+- `NODE_ENV` is not `development`: the filter removes `stackTrace` and `exceptionType`. In `development`, the body stays full.
+- The status is 500 or more: the filter removes `message`. A lower status keeps it.
 - A 5xx response never has a message, in each environment. So `new InternalServerErrorException(err.message)` does not show `err.message` to the client.
 
 The handlers and the logger go into the filter constructor (my-thought 1 and 5):
