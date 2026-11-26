@@ -4,12 +4,12 @@
 
 Use the data of the delta. Each `describe` is a requirement name, and each `it` is a scenario name.
 
-- [ ] `apps/back/src/common/interceptors/response.interceptor.spec.ts` (NEW) — call `intercept()` with a mock `ExecutionContext` (`getType()`, `switchToHttp().getResponse()`) and a `CallHandler` that returns `of(value)` or `throwError(() => error)` of RxJS. Read the result with `lastValueFrom()`. Requirements: "Success response body" (except "Text result"), "Results that keep their shape".
-- [ ] `apps/back/test/app.e2e-spec.ts` — change the test of `GET /` to `describe('Success response body')` and `it('Text result')`. The expected body is the JSON of the scenario.
+- [x] `apps/back/src/common/interceptors/response.interceptor.spec.ts` (NEW) — call `intercept()` with a mock `ExecutionContext` (`getType()`, `switchToHttp().getResponse()`) and a `CallHandler` that returns `of(value)` or `throwError(() => error)` of RxJS. Read the result with `lastValueFrom()`. Requirements: "Success response body" (except "Text result"), "Results that keep their shape".
+- [x] `apps/back/test/app.e2e-spec.ts` — change the test of `GET /` to `describe('Success response body')` and `it('Text result')`. The expected body is the JSON of the scenario.
 
 Run the tests. They must fail for the expected reason: `ResponseInterceptor` does not exist, and `GET /` returns the text `Hello World!`.
 
-Result (step 4): –
+Result (step 4): 2026-11-26. `pnpm --filter back test` fails as expected: `response.interceptor.spec.ts` stops with `Cannot find module './response.interceptor.js'`. The file has 6 tests, one for each scenario. `pnpm --filter back test:e2e` fails as expected: "Text result" gets the text `Hello World!`, not the JSON body.
 
 ## 2. Code (step 5)
 

@@ -4,7 +4,10 @@ import request from 'supertest';
 import { App } from 'supertest/types.js';
 import { AppModule } from './../src/app.module.js';
 
-describe('AppController (e2e)', () => {
+// E2E test of change 261126-1155. Names come from
+// openspec/changes/261126-1155-success-response/specs/api-response/spec.md.
+
+describe('Success response body', () => {
   let app: INestApplication<App>;
 
   beforeEach(async () => {
@@ -16,14 +19,14 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  it('/ (GET)', () => {
+  afterEach(async () => {
+    await app.close();
+  });
+
+  it('Text result', () => {
     return request(app.getHttpServer())
       .get('/')
       .expect(200)
-      .expect('Hello World!');
-  });
-
-  afterEach(async () => {
-    await app.close();
+      .expect({ success: true, data: 'Hello World!', statusCode: 200 });
   });
 });
