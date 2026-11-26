@@ -1,6 +1,6 @@
 # 261126-1154 — HTTP error response
 
-Status: Tested
+Status: Implemented
 Type: Feature
 Depends on: 261124-0853 (`AppError`, `toAppError()`, `logError()`, `isDevelopment()`)
 Decisions: EF1–EF10 (`design.md` §1)

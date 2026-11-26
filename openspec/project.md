@@ -68,9 +68,10 @@ The back app has no feature module yet. The first change that adds one follows t
 
 ### Registration steps
 
-| New item | Register it in                            |
-| -------- | ----------------------------------------- |
-| Module   | `apps/back/src/app.module.ts` (`imports`) |
+| New item                | Register it in                                                                              |
+| ----------------------- | ------------------------------------------------------------------------------------------- |
+| Module                  | `apps/back/src/app.module.ts` (`imports`)                                                   |
+| Global exception filter | `apps/back/src/app.module.ts` (`providers`: `APP_FILTER`, `ERROR_HANDLERS`, `ERROR_LOGGER`) |
 
 ## 5. Front registration steps
 
@@ -110,6 +111,8 @@ pnpm install
 ```bash
 pnpm dev
 ```
+
+`pnpm dev` and `pnpm --filter back dev` run the back app with `NODE_ENV=development`, so an error response has the debug fields.
 
 ```bash
 pnpm --filter back dev
